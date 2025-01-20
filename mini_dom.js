@@ -1,4 +1,4 @@
-import {reactive, untrack} from './mini_dom_signal.ts';
+import {reactive, untrack} from './mini_dom_signal.js';
 import { html } from './mini_html.js';
 import {diffArrays} from './mini_dom_array.js';
 export {render, renderClient, onMount, onUnmount, hydrate, renderAttribute};

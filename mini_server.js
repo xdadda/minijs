@@ -1,13 +1,13 @@
 export { stream };
 import { AsyncLocalStorage } from 'node:async_hooks';
+import { isServer } from './index.js'
 import { serverCtx, setCtx, getCtx } from './mini_server_ctx.js';
 
 const DEBUG = false;
 
-
 ////////// ASYNC SERVER STATE CONTEXT ////////////
   async function runServerCTX(uid,fn) {
-    if(!import.meta.env.SSR ) return null;
+    if(!isServer) return null;
     let serverUID=getCtx();
     if(!serverUID) {
       serverUID = new AsyncLocalStorage();

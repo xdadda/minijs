@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "ssr-first reactive UI javascript library with async components",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -22,5 +23,12 @@
   "bugs": {
     "url": "https://github.com/xdadda/minijs/issues"
   },
-  "homepage": "https://github.com/xdadda/minijs#readme"
+  "homepage": "https://github.com/xdadda/minijs#readme",
+  "exports": {
+    ".": "./index.js",
+    "./server": "./server/index.js",
+    "./store": "./store/index.js",
+    "./router": "./router/index.js",
+    "./components": "./components/index.js"
+  }
 }

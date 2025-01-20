@@ -1,26 +1,21 @@
-//BASED ON https://github.com/WebReflection/udomdiff
-
-export {diffArrays};
-import {renderClient} from './mini_dom.js';
-import {updateFragment,clearFragment} from './mini_dom_fragments.js';
-
-
-function insertHTML(item,parent,node){
-  const t = document.createComment('');
-  parent.parent.insertBefore(t,node);
-  renderClient(t,item);
-  return t;
-}
-
-
-function replaceHTML(item,node){
-  const frag = renderClient(node,item);
-  return frag[0];
-}
-
-
 ////////// DOM ARRAYS ////////////////////////////
+  //BASED ON https://github.com/WebReflection/udomdiff
+  export {diffArrays};
+  import {renderClient} from './mini_dom.js';
+  import {updateFragment,clearFragment} from './mini_dom_fragments.js';
 
+
+  function insertHTML(item,parent,node){
+    const t = document.createComment('');
+    parent.parent.insertBefore(t,node);
+    renderClient(t,item);
+    return t;
+  }
+
+  function replaceHTML(item,node){
+    const frag = renderClient(node,item);
+    return frag[0];
+  }
   const DEBUGarr = false;
   const DEBUGbmk = false;
   //modified version of https://github.com/WebReflection/udomdiff/blob/main/esm/index.js

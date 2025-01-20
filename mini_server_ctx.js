@@ -1,8 +1,10 @@
-export {serverCtx, serverState, setCtx, getCtx};
 
 ////////// SERVER CTX & STATE ////////////////////
+  //import { isServer } from './index.js'
+  export {serverCtx, serverState, setCtx, getCtx};
 
-  let serverCtx=import.meta.env.SSR?new Map():null;
+  const isServer=typeof window == "undefined"; //import.meta.env.SSR;
+  let serverCtx=isServer?new Map():null;
   let serverUID;           //will point to an AsyncLocalStorage, which will hold a session uid to retrieve serverctx from serverCtx map
 
   function setCtx(ctx){
@@ -16,7 +18,7 @@ export {serverCtx, serverState, setCtx, getCtx};
   //serverState(key)        get key value from ctx state
   //serverState(key,value)  set key value in ctx state
   function serverState(key,value){
-    if(import.meta.env.SSR ) {
+    if(isServer) {
       let uid = serverUID.getStore();
       if(!uid) return console.error('MiNi: server ctx missing');
       let ctx = serverCtx.get(uid);

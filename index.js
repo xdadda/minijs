@@ -12,18 +12,18 @@
 "use strict";
 export { html } from './mini_html.js';
 
-import { reactive as rC, untrack as uC } from './mini_dom_signal.ts';
+import { reactive as rC, untrack as uC } from './mini_dom_signal.js';
 import { reactive as rS, untrack as uS } from './mini_server_signal.js';
 
-const isServer=import.meta.env.SSR;
+const isServer=typeof window == "undefined"; //import.meta.env.SSR;
 const isSSR = isServer || !!window._ctx_;
-const reactive=import.meta.env.SSR?rS:rC;
-const untrack=import.meta.env.SSR?uS:uC;
+const reactive=isServer?rS:rC;
+const untrack=isServer?uS:uC;
 export { reactive, untrack, isServer, isSSR };
 
 import {onMount as omC, onUnmount as ouC} from './mini_dom.js';
-const onMount=import.meta.env.SSR?()=>{}:omC;
-const onUnmount=import.meta.env.SSR?()=>{}:ouC;
+const onMount=isServer?()=>{}:omC;
+const onUnmount=isServer?()=>{}:ouC;
 export { onMount, onUnmount };
 
 export { serverFetch, Suspense } from './mini_utils.js';

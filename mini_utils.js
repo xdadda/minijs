@@ -1,43 +1,10 @@
-import { html } from './mini_html.js';
-//import { reactive } from './index.js';
-import { serverState } from './mini_server_ctx.js';
-export { Suspense, serverFetch };
+  import { html } from './mini_html.js';
+  import { isServer } from './index.js'
+  import { serverState } from './mini_server_ctx.js';
+  export { Suspense, serverFetch };
 
 ////////// SUSPENSE //////////////////////////////
   function Suspense(componentFn,loaderFn){
-    /*
-      const isloading=reactive(true);
-      if(!componentFn || !loaderFn) {
-        console.error('MiNi: suspense',componentFn,loaderFn);
-        return html`<div>ERROR: Suspense missing correct args</div>`;
-      }
-
-      async function wrapComponent(){
-        //await new Promise(r => setTimeout(r, 0)); //next tick
-        let t = await componentFn; //to handle Promise return from lazy import
-
-        console.log('WRAP')
-        t = t();
-        if(!(t instanceof Promise)) {
-          console.error('MiNi: don\'t use suspense with sync components',componentFn);
-          return html`<div>ERROR: don\'t use suspense with sync components</div>`;
-        }
-        t = await t;
-        
-        if(t===null) { // SERVER COMPONENT
-          return null;
-        }
-        await new Promise(r => setTimeout(r, 0)); //next tick
-
-        isloading.value=false; 
-        return t;
-      }
-      
-      const loader = ()=>isloading.value && html`${()=>loaderFn()}`;
-      //const loader = ()=>html`${isloading.value && loaderFn();
-      loader.loader=true;
-      return ()=>html`${loader}${()=>wrapComponent()}`;
-    */
       const loader = ()=>loaderFn();
       loader.loader=true;
       const wrap = async()=>componentFn();
@@ -58,7 +25,7 @@ export { Suspense, serverFetch };
   async function serverFetch(uid,...args) {
       if(!uid) return console.error('MiNi: provide uid to serverFetch');
 
-      if(import.meta.env.SSR ){
+      if(isServer){
         //SERVER side
         const state = serverState();
         if(args[0][0]==='/') args[0]=('http://localhost:5173')+args[0];
