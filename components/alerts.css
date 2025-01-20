@@ -1,0 +1,71 @@
+
+.alert {
+  font-family: inherit;
+  position: fixed;
+  display: flex;
+  z-index: 999;
+  overflow: show;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  text-align: center;
+  color: inherit;
+}
+  /* Transparent Overlay */
+.alert::before {
+    content: '';
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, .6);
+  }
+
+.alert-message {
+  align-self: center;
+  width: 350px;
+  max-width: 80%;
+
+  color: inherit;
+
+  position: relative; 
+  margin: auto;
+  border-radius: 20px;
+  padding: 10px;
+
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+.alert-message .msg {
+  text-align: left;
+  width: 310px;
+  padding: 3px;
+  margin: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.alert-message button._btnfocus{
+  border-color: orange;
+}
+.alert-message input{
+  width: 295px;
+}
+
+.light .alert-message {
+  background-color: #d5d5d5;
+}
+
+.dark .alert-message {
+  background-color: #1f1f1f;
+  border: solid thin #000;
+}
+/*
+@media (prefers-color-scheme: light) {
+  .alert-message {
+    background-color: #f0f0f0;
+  }
+}
+*/

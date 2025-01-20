@@ -1,0 +1,1 @@
+export { alert, confirm, prompt } from './alerts.js';

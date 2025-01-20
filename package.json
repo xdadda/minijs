@@ -1,0 +1,26 @@
+{
+  "name": "mini",
+  "version": "0.1.0",
+  "description": "ssr-first reactive UI javascript library with async components",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xdadda/minijs.git"
+  },
+  "keywords": [
+    "reactive",
+    "UI",
+    "javascript",
+    "async",
+    "ssr"
+  ],
+  "author": "xdadda",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/xdadda/minijs/issues"
+  },
+  "homepage": "https://github.com/xdadda/minijs#readme"
+}
