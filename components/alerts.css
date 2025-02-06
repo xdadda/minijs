@@ -27,9 +27,6 @@
 
 .alert-message {
   align-self: center;
-  width: 350px;
-  max-width: 80%;
-
   color: inherit;
 
   position: relative; 
@@ -40,6 +37,8 @@
   overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
 }
 .alert-message .msg {
+  display: flex;
+  flex-direction: column;
   text-align: left;
   width: 310px;
   padding: 3px;

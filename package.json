@@ -4,6 +4,7 @@
   "description": "ssr-first reactive UI javascript library with async components",
   "main": "index.js",
   "type": "module",
+  "sideEffects": false,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

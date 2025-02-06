@@ -22,6 +22,7 @@
   function diffArrays(frag,a=[],b=[],fn) { //a = old, b=new
     let stime = DEBUGbmk&&Date.now();
     updateFragment(frag);
+    //console.log('diffArrays')
     DEBUGarr && console.log('diffArrays',frag,a,b);
     let before = frag.next;
     let parent = frag.parent;
@@ -180,7 +181,6 @@
 
       }
     }
-    DEBUGarr && console.log('diffArrays',Date.now()-stime+'ms');
     DEBUGbmk && console.log('diffArrays',Date.now()-stime+'ms');
   }
 

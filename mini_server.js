@@ -2,6 +2,7 @@ export { stream };
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { isServer } from './index.js'
 import { serverCtx, setCtx, getCtx } from './mini_server_ctx.js';
+import { html } from './mini_html.js';
 
 const DEBUG = false;
 
@@ -184,7 +185,9 @@ b.remove();\
                         session: { uid, url:ctx.url, user:ctx.user },
                       };
           serverCtx.set(uid,sctx);
- 
+
+          const _t = t
+          t=()=>html`${()=>_t()}`
           if(typeof t === 'function' && !t.html) t=await runServerCTX(uid,t); //will call ()=>App()
           if(typeof t === 'function' && t.html) t=t(); //resolve html``
           else console.error('MiNi: wrap stream input in ()=>comp()');

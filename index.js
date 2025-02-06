@@ -7,7 +7,7 @@
 // TODO: 
 //      SSR: error handling
 //      CACHING API request
-//      seperate mini library from ssr framework (router, store, serverfetch, auth, api)?!
+//      seperate mini library from ssr framework (serverfetch)?!
 //
 "use strict";
 export { html } from './mini_html.js';
@@ -17,13 +17,13 @@ import { reactive as rS, untrack as uS } from './mini_server_signal.js';
 
 const isServer=typeof window == "undefined"; //import.meta.env.SSR;
 const isSSR = isServer || !!window._ctx_;
-const reactive=isServer?rS:rC;
-const untrack=isServer?uS:uC;
+const reactive=/* #__PURE__ */isServer?rS:rC;
+const untrack=/* #__PURE__ */isServer?uS:uC;
 export { reactive, untrack, isServer, isSSR };
 
 import {onMount as omC, onUnmount as ouC} from './mini_dom.js';
-const onMount=isServer?()=>{}:omC;
-const onUnmount=isServer?()=>{}:ouC;
+const onMount=/* #__PURE__ */isServer?()=>{}:omC;
+const onUnmount=/* #__PURE__ */isServer?()=>{}:ouC;
 export { onMount, onUnmount };
 
 export { serverFetch, Suspense } from './mini_utils.js';

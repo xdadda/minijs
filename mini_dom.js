@@ -81,7 +81,8 @@ let hydrating = false;
         };
       let componentcounter=DEBUGcounter?0:'$';
       let compcount=0;
-      function renderFunction(placeholder,v, owner){
+      function renderFunction(placeholder,v,owner){
+
           if(hydrating) {
             //place comments to separate potentially reactive contents and match with SERVER stream
             placeholder.before(document.createComment(componentcounter));
@@ -121,8 +122,9 @@ let hydrating = false;
               
               //// RENDER FUNCTION: v() can be a COMPONENT (sync or promise), an ARRAY, a BOOLEAN STATE, a COMPUTED VALUE
               //console.log('COMPONENTS TREE',myid,v,'owner:',myowner)
-
               memo=typeof v === 'function' ? v() : v;
+
+              //intercept mount/unmount
               if(mountqueue.length>mountlen) {
                 const x = mountqueue.length-mountlen;
                 mountfn = mountqueue.splice(-x,x);
@@ -155,22 +157,41 @@ let hydrating = false;
                           }
                         }
                       }
+                      else {
+                          if(v.loader){
+                            mystack.loader=placeholder.previousSibling;
+                            placeholder.previousSibling.lx='lx'//+placeholder.previousSibling.lx;
+                            placeholder.previousSibling.firstloader=true
+                            placeholder.nextSibling.lx='lx'//+placeholder.nextSibling.lx;
+                          }
+
+                      }
               }
               async function _removeLoader(v,lx){
                   if(v.suspense && lx){
-                    await new Promise(r => setTimeout(r, 0)); //next tick
+                    //await new Promise(r => setTimeout(r, 0)); //next tick
                     //const lx=myowner[myid-1].loader;
                     DEBUGfunc&&console.log('HIDE LOADER', v.suspense, lx);
-                    while (lx.nextSibling && lx.nextSibling.data!==lx.data){
-                      //console.log('hiding',lx.nextSibling)
-                      lx.nextSibling.toremove=true
-                      lx.nextSibling.remove();
+                    if(hydrating){
+                      while (lx.nextSibling && lx.nextSibling.data!==lx.data){
+                        //console.log('hiding',lx.nextSibling)
+                        lx.nextSibling.toremove=true
+                        lx.nextSibling.remove();
+                      }
+                    }
+                    else {
+                      while (lx.nextSibling && lx.nextSibling.lx!==lx.lx){
+                        //console.log('hiding',lx.nextSibling)
+                        lx.nextSibling.toremove=true
+                        lx.nextSibling.remove();
+                      }
                     }
                     //await new Promise(r => setTimeout(r, 0)); //next tick
                   }
               }
 
               function _handleRender(val){
+
                       if(val?.html) { 
                         DEBUGfunc&&console.log('RENDER_SYNC_COMPONENT',component,val,v.loader);
                         _reactComments();
@@ -186,6 +207,7 @@ let hydrating = false;
                       else if(val instanceof Promise){
 
                           async function launchAsyncRender(component,vv) {
+                            
                             let val = await vv;
                             if(val?.default) val=await val.default(); //from import xxx from 'yyyy'
                             if(val===null) {
@@ -200,8 +222,9 @@ let hydrating = false;
                             }
                             else {
                               _reactComments();
+                              //if(val.default) component = renderClient(component[0],html`${()=>val.default()}`,mystack)
+                              //else component= await renderClient(component,val,mystack); //NOTE: await here is important! TBD udnerstand why
                               component= await renderClient(component,val,mystack); //NOTE: await here is important! TBD udnerstand why
-
                               //REMOVE LOADER IF PRESENT!
                               await _removeLoader(v,myowner[myid-1]?.loader)
 
@@ -209,10 +232,8 @@ let hydrating = false;
                                 hydrateAsyncTree(placeholder);
                                 //asynchydrating=false;
                               }
-
-
-
                               if(mountfn) setTimeout(()=>{mountfn.forEach(f=>f());mountfn=undefined},0);
+
                             }
                           }
 
@@ -285,7 +306,6 @@ let hydrating = false;
               }
             }, {effect: true});
       }
-
 
       function findPlaceholder(root,commentText) {
           return document
@@ -424,10 +444,12 @@ let hydrating = false;
     return frag;
   }
 //////////////////////////////////////////////////
+
   
   async function render(root, comp){
     root.appendChild(document.createElement('div'));
-    await renderClient(root.children[0], comp);
+    if(typeof comp!=='function') return console.error('MiNi: render 2nd arg must be a function')
+    await renderClient(root.children[0], html`${()=>comp()}`); //
     compcount=0
   }
 
@@ -449,7 +471,7 @@ let hydrating = false;
 
     let shadowroot = document.createElement('div');
     shadowroot.appendChild(document.createElement('div'));
-    await renderClient(shadowroot.children[0], comp);
+    await renderClient(shadowroot.children[0], html`${()=>comp()}`); //html`${async()=>await comp()}`
     compcount=0
 
     //FOR DEBUG//

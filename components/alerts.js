@@ -18,7 +18,7 @@ import './alerts.css';
 //@param onCancel   (id) => callback function
 //@param onClose    (id,value) => callback function
 //@param type       prompt || undefined  //prompt will show an input element
-function _Modal({content, buttons, onCancel, onClose, type}){
+function _Modal({content, buttons, onCancel, onClose, type, placeholder='',width}){
   const alertid=uuidv4();
 
   function handleCancel(e){
@@ -49,9 +49,9 @@ function _Modal({content, buttons, onCancel, onClose, type}){
     <div id="${alertid}" aria-busy="true" class='alert' @click="${handleCancel}">
       <div class='alert-message' @click="${e=>e.stopPropagation()}" @keyup="${handleKey}">
         <br/>
-        <div class="msg">
+        <div class="msg" style="${width?'width:'+width+'px;':''}">
           ${content}
-          ${type==='prompt' && `<br/><input type='text' id='_in${alertid}' @keyup="${handleKey}"/>`}
+          ${type==='prompt' && `<br/><input type='text' id='_in${alertid}' @keyup="${handleKey}" placeholder="${placeholder||''}"/>`}
         </div>
         <br/>
         <div>
@@ -70,7 +70,7 @@ function _Modal({content, buttons, onCancel, onClose, type}){
   `;
 }
 
-export async function prompt(msg){
+export async function prompt(msg,width,plc){
 
   return await new Promise((resolve,reject) => {
     const app = document.querySelector('.app');
@@ -86,7 +86,9 @@ export async function prompt(msg){
       ],
       onClose: handleClose,
       onCancel: handleCancel,
-      type:'prompt'
+      type:'prompt',
+      placeholder:plc,
+      width
     }));
   });
 }

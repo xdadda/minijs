@@ -41,9 +41,18 @@
     }
     const route = getElementFromURL(decodeURIComponent(store('url')), routes)
     store('route').value=route;
-    //console.log('Router',route,loader)
+    
     if(loader) return Suspense(store('route').value.element,loader)
     else return async()=>html`${store('route').value.element}`
+    
+    /*
+    let asyncimport=false
+    //if(route.element.toString().startsWith('async')) asyncimport=true
+      console.log('asyncimport',asyncimport,route.element)
+    const el = asyncimport?async()=>html`${(await route.element()).default}`:route.element
+    if(loader) return Suspense(el,loader)
+    else return async()=>html`${el}`
+    */
   }
 
 
