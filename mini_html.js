@@ -55,13 +55,13 @@ const DEBUG=false;
               newvalues[i]+=`<!--rx${id}:${ix}-->`;
             })
           }
-          else if(v===false || v===undefined){
+          else if(v===false || v===undefined || v===''){
             if(isAttribute && strings[i].slice(-1)==='"') {
               strings[i]=strings[i].replace(/\s(\S+)$/,'"'); //remove attribute if false
             }
             newvalues.push('');
           }
-          else if(typeof v === 'object' && typeof v.$item === 'function' && (Array.isArray(v.$array) || v.$array.signal) ) {
+          else if(v && typeof v === 'object' && typeof v.$item === 'function' && (Array.isArray(v.$array) || v.$array.signal) ) {
             reactarray.push({type:'for',key:id,v});
             newvalues[i]=`<!--rx${id}-->`;
           }
