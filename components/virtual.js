@@ -40,7 +40,7 @@ export function virtual({
         const virtualid=uuidv4();
         let animationFrame, container;
         const totalContentHeight = itemCount * rowHeight + 'px';
-        console.log('setup VirtualScroll',itemCount,totalContentHeight)
+        //console.log('setup VirtualScroll',itemCount,totalContentHeight)
         const offsetY=reactive(0)
         let visibleNodesCount = Math.ceil(parentHeight / rowHeight); // + 2 * nodePadding not needed for SSR
         visibleNodesCount = Math.min(itemCount, visibleNodesCount);

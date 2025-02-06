@@ -209,7 +209,7 @@ let hydrating = false;
                           async function launchAsyncRender(component,vv) {
                             
                             let val = await vv;
-                            if(val?.default) val=await val.default(); //from import xxx from 'yyyy'
+                            //if(val?.default) val=await val.default(); //from import xxx from 'yyyy'
                             if(val===null) {
                               //ASYNC SERVER ONLY COMPONENT
                               //REMOVE LOADER IF PRESENT!
@@ -222,9 +222,9 @@ let hydrating = false;
                             }
                             else {
                               _reactComments();
-                              //if(val.default) component = renderClient(component[0],html`${()=>val.default()}`,mystack)
-                              //else component= await renderClient(component,val,mystack); //NOTE: await here is important! TBD udnerstand why
-                              component= await renderClient(component,val,mystack); //NOTE: await here is important! TBD udnerstand why
+                              if(val.default) component = renderClient(component[0],html`${()=>val.default()}`,mystack)
+                              else component= await renderClient(component,val,mystack); //NOTE: await here is important! TBD udnerstand why
+                              //component= await renderClient(component,val,mystack); //NOTE: await here is important! TBD udnerstand why
                               //REMOVE LOADER IF PRESENT!
                               await _removeLoader(v,myowner[myid-1]?.loader)
 
