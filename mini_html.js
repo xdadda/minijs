@@ -55,7 +55,7 @@ const DEBUG=false;
               newvalues[i]+=`<!--rx${id}:${ix}-->`;
             })
           }
-          else if(v===false || v===undefined || v===''){
+          else if(v===false || v===undefined){
             if(isAttribute && strings[i].slice(-1)==='"') {
               strings[i]=strings[i].replace(/\s(\S+)$/,'"'); //remove attribute if false
             }
