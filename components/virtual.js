@@ -1,4 +1,4 @@
-import { html, reactive, onMount, onUnmount } from 'mini'
+import { html, reactive, onMount, onUnmount, untrack } from 'mini'
 
   function uuidv4() {
     return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
@@ -13,23 +13,38 @@ export function virtual({
         itemCount,        //# of items
         rowHeight,        //in pixels
         nodePadding,      //number of "padding" items
-        onUpdate=false,   //triggered when virtual list is updated
+        onUpdateRow=false,   //triggered when virtual list is updated
+        onUpdateScroll=false,   //triggered when virtual list is updated
         parentHeight=0,   //in pixels (for SSR) TODO: fix a clearFragment error in mini_dom if this is set
       }){
 
+        const virtualid=uuidv4();
+        let animationFrame, container;
+        let _prev_startN, _itemCount;
 
-        let _prev_startN
+        const offsetY=reactive(0)
+        const scrollY=reactive(0)
+        const actualRow = reactive(0)
+        const visibleChildren = reactive([])
+
+        if(itemCount.signal) _itemCount=itemCount;
+        else if(typeof itemCount==='function') _itemCount=reactive(itemCount);
+        else _itemCount={value:itemCount};
+
+        //console.log('VIRTUAL',_itemCount.value)
+
           function updateScroll(){
             const _startN =  Math.max(0,Math.floor(container.scrollTop / rowHeight) - nodePadding);
-            const viewportHeight= container.offsetHeight
-            startNode.value = _startN;
-            actualNode.value = Math.floor(container.scrollTop / rowHeight)
-            offsetY.value = _startN * rowHeight;
+            const viewportHeight= container.offsetHeight;
             visibleNodesCount = Math.ceil(viewportHeight / rowHeight) + 2 * nodePadding;
-            visibleNodesCount = Math.min(itemCount - _startN, visibleNodesCount);
-            //if(visibleChildren.value.length!==visibleNodesCount) visibleChildren.value= new Array(visibleNodesCount).fill(null)
-            if(_prev_startN!==_startN) visibleChildren.value= new Array(visibleNodesCount).fill(null).map((_, index) => index+_startN)
-            _prev_startN=_startN
+            visibleNodesCount = Math.min(_itemCount.value - _startN, visibleNodesCount);
+
+            actualRow.value = Math.floor(container.scrollTop / rowHeight);
+            offsetY.value = _startN * rowHeight;
+            scrollY.value = container.scrollTop;
+
+            if(_prev_startN!==_startN) visibleChildren.value= new Array(visibleNodesCount).fill(null).map((_, index) => index+_startN);
+            _prev_startN=_startN;
           }
 
           function _eventListenerFn(){
@@ -37,23 +52,22 @@ export function virtual({
             animationFrame = requestAnimationFrame(updateScroll);            
           }
 
-        const virtualid=uuidv4();
-        let animationFrame, container;
-        const totalContentHeight = itemCount * rowHeight + 'px';
-        //console.log('setup VirtualScroll',itemCount,totalContentHeight)
-        const offsetY=reactive(0)
+        const totalContentHeight = _itemCount.value * rowHeight + 'px';
         let visibleNodesCount = Math.ceil(parentHeight / rowHeight); // + 2 * nodePadding not needed for SSR
-        visibleNodesCount = Math.min(itemCount, visibleNodesCount);
-        //console.log('visibleNodesCount',visibleNodesCount)
-        let visibleChildren=reactive(new Array(visibleNodesCount).fill(null))
-        let startNode = reactive(0)
-        let actualNode = reactive(0)
+        visibleNodesCount = Math.min(_itemCount.value, visibleNodesCount);
+        visibleChildren.value=new Array(visibleNodesCount).fill(null)
 
-        if(onUpdate) {
+        if(onUpdateRow) {
           reactive(()=>{
-            //trigger when rows change
-            const y=actualNode.value
-            if(onUpdate) onUpdate(y)
+            const y=actualRow.value
+            if(onUpdateRow) onUpdateRow(y)
+          },{effect:true})          
+        }
+        if(onUpdateScroll) {
+          reactive(()=>{
+            const y=scrollY.value
+
+            if(onUpdateScroll) onUpdateScroll(y)
           },{effect:true})          
         }
 
