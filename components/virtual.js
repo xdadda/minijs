@@ -10,12 +10,14 @@ import { html, reactive, onMount, onUnmount, untrack } from 'mini'
 //note parentElement need to have a specific height
 export function virtual({
         renderItem,       //(idx)=>{..}
-        itemCount,        //# of items
+        itemCount,        //# of items (can be a number, signal of function)
         rowHeight,        //in pixels
         nodePadding,      //number of "padding" items
         onUpdateRow=false,   //triggered when virtual list is updated
         onUpdateScroll=false,   //triggered when virtual list is updated
+        onMounted=false,
         parentHeight=0,   //in pixels (for SSR) TODO: fix a clearFragment error in mini_dom if this is set
+        //refresh=false
       }){
 
         const virtualid=uuidv4();
@@ -31,7 +33,13 @@ export function virtual({
         else if(typeof itemCount==='function') _itemCount=reactive(itemCount);
         else _itemCount={value:itemCount};
 
-        //console.log('VIRTUAL',_itemCount.value)
+        /*
+        let _refresh;
+        if(refresh.signal) _refresh=refresh;
+        else if(typeof refresh==='function') _refresh=reactive(refresh);
+        else _refresh={value:refresh};
+        */
+        //console.log('VIRTUAL')
 
           function updateScroll(){
             const _startN =  Math.max(0,Math.floor(container.scrollTop / rowHeight) - nodePadding);
@@ -57,19 +65,6 @@ export function virtual({
         visibleNodesCount = Math.min(_itemCount.value, visibleNodesCount);
         visibleChildren.value=new Array(visibleNodesCount).fill(null)
 
-        if(onUpdateRow) {
-          reactive(()=>{
-            const y=actualRow.value
-            if(onUpdateRow) onUpdateRow(y)
-          },{effect:true})          
-        }
-        if(onUpdateScroll) {
-          reactive(()=>{
-            const y=scrollY.value
-
-            if(onUpdateScroll) onUpdateScroll(y)
-          },{effect:true})          
-        }
 
         onMount(()=>{
           const el = document.getElementById(virtualid)
@@ -78,12 +73,31 @@ export function virtual({
           if(container.style.overflowY!=='auto') container.style.overflowY='auto'
           container.addEventListener("scroll", _eventListenerFn);
           updateScroll()
+
+          if(onUpdateRow) {
+            reactive(()=>{
+              const y=actualRow.value
+              const lastrow=_prev_startN+visibleNodesCount-1
+              if(onUpdateRow) onUpdateRow(y,lastrow)
+            },{effect:true})          
+          }
+          if(onUpdateScroll) {
+            reactive(()=>{
+              const y=scrollY.value
+
+              if(onUpdateScroll) onUpdateScroll(y)
+            },{effect:true})          
+          }
+
+          if(onMounted) onMounted()
+
         })
 
         onUnmount(()=>{
-          //console.log('unmount VirtualScroll')
+          console.log('unmount VirtualScroll')
           container?.removeEventListener("scroll", _eventListenerFn);
         })
+  
 
         return html`
             <div id="${virtualid}" aria-role="listbox"
@@ -93,16 +107,33 @@ export function virtual({
                 class="result-list" tabindex="0"
                 :style="${()=>`transform: translateY(${offsetY.value}px);`}"
               >
-                ${{
-                  $array:visibleChildren,
-                  $item:renderItem
-                }}
+                  ${{
+                    $array:visibleChildren,
+                    $item:renderItem
+                  }}
+
 
               </div>
             </div>
           `
 }
+/*
+                  ${{
+                    $array:_refresh.value ? visibleChildren :[],
+                    $item:renderItem
+                  }}
 
+
+                ${()=>_refresh.value && html`
+                  <div>
+                  ${{
+                    $array:visibleChildren,
+                    $item:renderItem
+                  }}
+                  </div>
+                `}
+
+*/
 
 /*
                 ${()=>visibleChildren?.value.map((_, index) => renderItem(index + startNode.value))}

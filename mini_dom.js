@@ -79,6 +79,16 @@ let hydrating = false;
             .map(k => typeof o[k] === 'object' ? _flatten(o[k]) : (o[k]))
           );
         };
+      /*
+      function _unmount(stack,myid){
+        const id = Object.keys(stack)[0]
+        console.log(id,myid)
+        const unmountlist = _flatten(stack);
+        if(unmountlist.length) {
+          unmountlist.reverse().forEach(f=>(typeof f==='function'&&f()));
+          stack={[id]:{}};
+        }
+      }*/
       let componentcounter=DEBUGcounter?0:'$';
       let compcount=0;
       function renderFunction(placeholder,v,owner){
@@ -103,19 +113,22 @@ let hydrating = false;
           let mountfn, unmountfn;
     
           let myid=++compcount;
-          let mystack={[myid]:{}};
-          owner[compcount]=mystack;
-          let myowner=owner;
+          //console.log('renderFunction',owner)
+          //const parentid=parseInt(Object.keys(owner)[0])
+          let mystack={[myid]:{}}; //,prid:parentid
+          owner[myid]=mystack;
+          //let myowner=owner;
     
           let memo;
 
           reactive(()=>{
               //THIS IS THE HEART WHERE REACTIVITY IS HANDLED
-
               const unmountlist = _flatten(mystack);
               if(unmountlist.length) {
+                //console.log('unmounting',myid,mystack)
                 unmountlist.reverse().forEach(f=>(typeof f==='function'&&f()));
-                mystack={[myid]:{}};
+                mystack={[myid]:{}}; //,prid:parentid
+                owner[myid]=mystack
               }
 
               const mountlen = mountqueue.length, unmountlen = unmountqueue.length;
@@ -133,13 +146,13 @@ let hydrating = false;
                 const x = unmountqueue.length-unmountlen;
                 unmountfn = unmountqueue.splice(-x,x);
                 mystack[myid].unmount = unmountfn;
+                //console.log('>',myid,unmountfn)
               }
 
               let val= memo;
               val = typeof val === 'function' ? val() : val; //HANDLE THE FUNCTION              
               //render SYNC COMPONENT -- NOTE: it will be re-run everytime it's recreated after hiding
 
-              _handleRender(val);
 
               function _reactComments(){
                       if(hydrating){
@@ -189,7 +202,6 @@ let hydrating = false;
                     //await new Promise(r => setTimeout(r, 0)); //next tick
                   }
               }
-
               function _handleRender(val){
 
                       if(val?.html) { 
@@ -200,7 +212,7 @@ let hydrating = false;
                           hydrateAsyncTree(placeholder);
                           //asynchydrating=false
                         }
-                        if(mountfn) setTimeout(()=>{mountfn.forEach(f=>f());mountfn=undefined},0);
+                        if(mountfn) setTimeout(()=>{mountfn?.forEach(f=>f());mountfn=undefined},0);
                       }
 
                       //render ASYNC COMPONENT
@@ -213,7 +225,8 @@ let hydrating = false;
                             if(val===null) {
                               //ASYNC SERVER ONLY COMPONENT
                               //REMOVE LOADER IF PRESENT!
-                              await _removeLoader(v,myowner[myid-1]?.loader)
+                              await _removeLoader(v,owner[myid-1]?.loader)
+                              delete owner[myid-1]?.loader
                             } 
                             else if(val===false || val===''){
                               _reactComments();
@@ -226,7 +239,8 @@ let hydrating = false;
                               else component= await renderClient(component,val,mystack); //NOTE: await here is important! TBD udnerstand why
                               //component= await renderClient(component,val,mystack); //NOTE: await here is important! TBD udnerstand why
                               //REMOVE LOADER IF PRESENT!
-                              await _removeLoader(v,myowner[myid-1]?.loader)
+                              await _removeLoader(v,owner[myid-1]?.loader)
+                              delete owner[myid-1]?.loader
 
                               if(asynchydrating){
                                 hydrateAsyncTree(placeholder);
@@ -280,9 +294,11 @@ let hydrating = false;
                       }
               }
 
+              _handleRender(val);
+
           },{effect:true});
 
-          return;
+          return myid;
       }
 
       function renderAttribute(placeholder,key,v){
@@ -338,7 +354,6 @@ let hydrating = false;
   //@param t:  obj {html,reactarray} from html``
   //let rootowner = {0:{}}
   function renderClient(frag, t, owner={0:{}}){
-    let stime=performance.now();
 
     if(!frag) return console.error('MiNi: renderClient missing node element');
     if(!frag.fragment) frag=createFragment(frag);
@@ -367,11 +382,12 @@ let hydrating = false;
             else {
                 if(v.html === true) { //TEMPLATE: html`` which returns an obj {html,reactarray}
                   DEBUG&&console.log('HTML>>',placeholder,v.name);
-                  placeholder=renderClient(placeholder,v);
+                  placeholder=renderClient(placeholder,v, owner);
                 }
                 else if(typeof v === 'function') {
                   DEBUG&&console.log('FUNC>>',placeholder,v);
-                  renderFunction(placeholder,v, owner);
+                  const id=renderFunction(placeholder,v, owner);
+                  frag.myid=id
                 }
                 else if(v instanceof Promise) { //ALLOWING ${asynccomponent()} WILL BRAKE MOUNT/UNMOUNT & SERVERFETCH!!
                   console.error('MiNi: wrap async component in ()=>{}');
@@ -418,10 +434,15 @@ let hydrating = false;
               const frag = createFragment(placeholder);
               frag[0].remove();
               frag.pop(); //let's have an empty fragment to begin with
-              let oldarray;              
+              let oldarray;
+              let myid=++compcount;
+              let mystack={[myid]:{}}; //,prid:parentid
+              owner[myid]=mystack;
+              //console.log('DIFFFFFF',myid,owner)
+
               reactive(()=>{
                 const newarray = v.$array.signal? v.$array.value : v.$array;
-                diffArrays(frag,oldarray,newarray,v.$item);
+                diffArrays(frag,oldarray,newarray,v.$item, mystack);
                 oldarray=newarray;
               },{effect:true});
 
@@ -441,6 +462,7 @@ let hydrating = false;
       root.appendChild(tmplt.content);
     }
 
+    //console.log('----------',owner)
     return frag;
   }
 //////////////////////////////////////////////////
@@ -449,7 +471,9 @@ let hydrating = false;
   async function render(root, comp){
     root.appendChild(document.createElement('div'));
     if(typeof comp!=='function') return console.error('MiNi: render 2nd arg must be a function')
-    await renderClient(root.children[0], html`${()=>comp()}`); //
+    let rootowner ={0:{}}
+    await renderClient(root.children[0], html`${()=>comp()}`,rootowner); //
+    console.log('rootowner',rootowner)
     compcount=0
   }
 
@@ -459,7 +483,7 @@ let hydrating = false;
     // Keep trying until root is available. 
     // As the main.js is loaded async it will execute immediately and root may not be ready!
     const ssrtimeout = 500; //ms
-    let el, timeout=0, stime=Date.now();
+    let el, timeout=0;
     while(!el && timeout<ssrtimeout) {
       el = await new Promise(r => setTimeout(()=>r(document.querySelector(root)),10)); //
       timeout+=10; //ms
@@ -471,7 +495,9 @@ let hydrating = false;
 
     let shadowroot = document.createElement('div');
     shadowroot.appendChild(document.createElement('div'));
-    await renderClient(shadowroot.children[0], html`${()=>comp()}`); //html`${async()=>await comp()}`
+    let rootowner ={0:{}}
+    await renderClient(shadowroot.children[0], html`${()=>comp()}`,rootowner); //html`${async()=>await comp()}`
+    console.log('rootowner',rootowner)
     compcount=0
 
     //FOR DEBUG//
