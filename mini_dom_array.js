@@ -15,7 +15,7 @@
     let mystack={[newid]:{}};
     owner[newid]=mystack;
     const frag = renderClient(t,item,mystack);
-    frag.prev.nextSibling.myid=newid;
+    if(frag.prev) frag.prev.nextElementSibling.myid=newid;
     //console.log('insertHTML',frag,owner)
     return t;
   }
@@ -25,9 +25,9 @@
     const newid=parseInt(Object.keys(owner).slice(-1)[0])+1
     let mystack={[newid]:{}};
     owner[newid]=mystack;
-    const frag = renderClient(node,item,owner,);
-    frag.prev.nextSibling.myid=newid;
-    //console.log('replaceHTML',frag.myid,owner)
+    const frag = renderClient(node,item,mystack);
+    if(frag.prev)  frag.prev.nextElementSibling.myid=newid;
+    //console.log('replaceHTML',frag,owner)
     return frag[0];
   }
 
@@ -38,15 +38,17 @@
         };
 
   function unmountFrag(myid,mystack){
+    //console.log('unmountFrag',myid,mystack,mystack[myid])
     let unmountlist;
     if(myid) {
+      if(!mystack[myid]) return
       unmountlist = _flatten(mystack[myid]);
       if(unmountlist.length) {
         unmountlist.reverse().forEach(f=>(typeof f==='function'&&f()));
       } 
       delete mystack[myid];
     }
-    else {
+    else{
       let firstid=parseInt(Object.keys(mystack)[0])
       let firstobj = mystack[firstid]
       unmountlist = _flatten(mystack);
