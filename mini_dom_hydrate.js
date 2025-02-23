@@ -31,6 +31,10 @@ import {renderAttribute} from './mini_dom.js'
           else console.error('MiNi: unknown special attr',type,i)
         }
       }
+      if(newnode.reactattr) {
+        //console.log('hydrate',newnode)
+        delete newnode.reactattr //let's clear some memory
+      }
 
       //CLIENT ONLY COMPONENT
       if(oldnode.nodeType===8&&oldnode.data==='cx') { //SSR tells us it's a CLIENT ONLY COMPONENT //oldnode.tagName==='CX'

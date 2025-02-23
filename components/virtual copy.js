@@ -20,9 +20,9 @@ export function virtual({
         //refresh=false
       }){
 
-        const virtualid=reactive(); //=reactive(uuidv4()); //needs to be a signal for hydration
+        const virtualid=reactive(uuidv4()); //needs to be a signal for hydration
         let animationFrame, container;
-        let _prev_startN=0, _itemCount;
+        let _prev_startN, _itemCount;
 
         //let offsetY=0
         //const offsetY=reactive(0)
@@ -55,8 +55,8 @@ export function virtual({
 
             //offsetY.value = _startN * rowHeight;
             const offsetY = _startN * rowHeight;
-            virtualid._value.firstElementChild.style.transform=`translateY(${offsetY}px)`
-            //console.log('updateScroll',_startN,offsetY,container.scrollTop)
+            document.getElementById(virtualid._value).firstElementChild.style.transform=`translateY(${offsetY}px)`
+            //console.log('updateScroll',offsetY,container.scrollTop)
             if(onUpdateScroll) onUpdateScroll(container.scrollTop)
             //scrollY.value = container.scrollTop;
 
@@ -73,13 +73,14 @@ export function virtual({
           }
 
         const totalContentHeight = _itemCount.value * rowHeight + 'px';
-        let visibleNodesCount = Math.ceil(parentHeight / rowHeight)+2*nodePadding; // + 2 * nodePadding not needed for SSR
+        let visibleNodesCount = Math.ceil(parentHeight / rowHeight); // + 2 * nodePadding not needed for SSR
         visibleNodesCount = Math.min(_itemCount.value, visibleNodesCount);
-        visibleChildren.value=new Array(visibleNodesCount||0).fill(null).map((_, index) => index);
+        visibleChildren.value=new Array(visibleNodesCount||0).fill(null)
 
 
         onMount(()=>{
-          const el = virtualid._value //document.getElementById(virtualid._value)
+          const el = document.getElementById(virtualid._value)
+          console.log('mount VirtualScroll',virtualid._value,el)
           if(!el) return
           container=el.parentElement
           if(container.style.overflowY!=='auto') container.style.overflowY='auto'
@@ -96,7 +97,7 @@ export function virtual({
   
 
         return html`
-            <div :ref="${virtualid}" aria-role="listbox"
+            <div :id="${()=>virtualid.value}" aria-role="listbox"
               style="height:${totalContentHeight};overflow: hidden;position: relative; will-change: transform;"
             >
               <div class="result-list" tabindex="0">
@@ -104,6 +105,8 @@ export function virtual({
                     $array:visibleChildren,
                     $item:renderItem
                   }}
+
+
               </div>
             </div>
           `

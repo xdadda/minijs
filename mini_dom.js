@@ -17,7 +17,7 @@ const DEGUGshowreactive = false;
 const DEBUGbmk = false;
 const DEBUGcounter=true;
 
-let hydrating = false;
+//let hydrating = false;
 
 
   let mountqueue=[];
@@ -43,7 +43,7 @@ let hydrating = false;
           if(DEGUGshowreactive && tnode.nodeType===1) tnode.style.backgroundColor='yellow';
       }
 
-      function renderSignal(placeholder,v){
+      function renderSignal(placeholder,v,hydrating){
           const tmp = document.createTextNode('');
           placeholder.replaceWith(tmp);
           placeholder=tmp;
@@ -61,14 +61,14 @@ let hydrating = false;
           }, {effect:true});
       }
 
-      function renderArray(component,v,owner){
+      function renderArray(component,v,owner,hydrating){
           const tmp = document.createComment('rx');
           let nodesarray= new Array(v.length);
           nodesarray=nodesarray.fill(0).map(()=>tmp.cloneNode());
           let newcomponent = replaceFragments(component,nodesarray);        
 
           for(let i=0; i<v.length; i++){
-            renderFunction(nodesarray[i],()=>v[i],owner);
+            renderFunction(nodesarray[i],()=>v[i],owner,hydrating);
           }
           return newcomponent;
       }
@@ -91,7 +91,7 @@ let hydrating = false;
       }*/
       let componentcounter=DEBUGcounter?0:'$';
       let compcount=0;
-      function renderFunction(placeholder,v,owner){
+      function renderFunction(placeholder,v,owner,hydrating){
 
           if(hydrating) {
             //place comments to separate potentially reactive contents and match with SERVER stream
@@ -134,8 +134,9 @@ let hydrating = false;
               const mountlen = mountqueue.length, unmountlen = unmountqueue.length;
               
               //// RENDER FUNCTION: v() can be a COMPONENT (sync or promise), an ARRAY, a BOOLEAN STATE, a COMPUTED VALUE
-              //console.log('COMPONENTS TREE',myid,v,'owner:',myowner)
+              //console.log('COMPONENTS TREE',myid,v)
               memo=typeof v === 'function' ? v() : v;
+              //console.log('COMPONENTS TREE',myid,memo)
 
               //intercept mount/unmount
               if(mountqueue.length>mountlen) {
@@ -182,10 +183,10 @@ let hydrating = false;
               }
               async function _removeLoader(v,lx){
                   if(v.suspense && lx){
-                    //await new Promise(r => setTimeout(r, 0)); //next tick
                     //const lx=myowner[myid-1].loader;
                     DEBUGfunc&&console.log('HIDE LOADER', v.suspense, lx);
                     if(hydrating){
+                      await new Promise(r => setTimeout(r, 0)); //next tick
                       while (lx.nextSibling && lx.nextSibling.data!==lx.data){
                         //console.log('hiding',lx.nextSibling)
                         lx.nextSibling.toremove=true
@@ -203,11 +204,12 @@ let hydrating = false;
                   }
               }
               function _handleRender(val){
+                //console.log('_handleRender',val)
 
                       if(val?.html) { 
                         DEBUGfunc&&console.log('RENDER_SYNC_COMPONENT',component,val,v.loader);
                         _reactComments();
-                        component= renderClient(component,val,mystack);
+                        component= renderClient(component,val,mystack, hydrating);
                         if(asynchydrating){ //for deeply nested
                           hydrateAsyncTree(placeholder);
                           //asynchydrating=false
@@ -235,8 +237,8 @@ let hydrating = false;
                             }
                             else {
                               _reactComments();
-                              if(val.default) component = renderClient(component[0],html`${()=>val.default()}`,mystack)
-                              else component= await renderClient(component,val,mystack); //NOTE: await here is important! TBD udnerstand why
+                              if(val.default) component = renderClient(component[0],html`${()=>val.default()}`,mystack, hydrating)
+                              else component= await renderClient(component,val,mystack, hydrating); //NOTE: await here is important! TBD udnerstand why
                               //component= await renderClient(component,val,mystack); //NOTE: await here is important! TBD udnerstand why
                               //REMOVE LOADER IF PRESENT!
                               await _removeLoader(v,owner[myid-1]?.loader)
@@ -259,7 +261,7 @@ let hydrating = false;
                       else if(Array.isArray(val)) {
                         DEBUGfunc&&console.log('RENDER_ARRAY',placeholder,component[0]);
                         _reactComments();
-                        component = renderArray(component,memo,mystack);
+                        component = renderArray(component,memo,mystack,hydrating);
                         if(mountfn) setTimeout(()=>{mountfn.forEach(f=>f());mountfn=undefined},0);
                       }
 
@@ -353,7 +355,8 @@ let hydrating = false;
   //@param frag: fragment to replace with t.html
   //@param t:  obj {html,reactarray} from html``
   //let rootowner = {0:{}}
-  function renderClient(frag, t, owner={0:{}}){
+  function renderClient(frag, t, owner={0:{}}, hydrating=false){
+    //console.log('renderClient',hydrating,t)
 
     if(!frag) return console.error('MiNi: renderClient missing node element');
     if(!frag.fragment) frag=createFragment(frag);
@@ -382,11 +385,11 @@ let hydrating = false;
             else {
                 if(v.html === true) { //TEMPLATE: html`` which returns an obj {html,reactarray}
                   DEBUG&&console.log('HTML>>',placeholder,v.name);
-                  placeholder=renderClient(placeholder,v, owner);
+                  placeholder=renderClient(placeholder,v, owner, hydrating);
                 }
                 else if(typeof v === 'function') {
                   DEBUG&&console.log('FUNC>>',placeholder,v);
-                  const id=renderFunction(placeholder,v, owner);
+                  const id=renderFunction(placeholder,v, owner, hydrating);
                   frag.myid=id
                 }
                 else if(v instanceof Promise) { //ALLOWING ${asynccomponent()} WILL BRAKE MOUNT/UNMOUNT & SERVERFETCH!!
@@ -394,7 +397,7 @@ let hydrating = false;
                 }
                 else if(v.signal) {
                   DEBUG&&console.log('SIGNAL>>',placeholder);
-                  renderSignal(placeholder,v);
+                  renderSignal(placeholder,v, hydrating);
                 }
                 else console.error('MiNi: unknown node value',v);
             }  
@@ -439,7 +442,6 @@ let hydrating = false;
               let mystack={[myid]:{}}; //,prid:parentid
               owner[myid]=mystack;
               //console.log('DIFFFFFF',myid,owner)
-
               reactive(()=>{
                 const newarray = v.$array.signal? v.$array.value : v.$array;
                 diffArrays(frag,oldarray,newarray,v.$item, mystack);
@@ -473,7 +475,7 @@ let hydrating = false;
     if(typeof comp!=='function') return console.error('MiNi: render 2nd arg must be a function')
     let rootowner ={0:{}}
     await renderClient(root.children[0], html`${()=>comp()}`,rootowner); //
-    console.log('rootowner',rootowner)
+    //console.log('rootowner',rootowner)
     compcount=0
   }
 
@@ -491,13 +493,13 @@ let hydrating = false;
     }
     root=el;
 
-    hydrating = true;
+    let hydrating = true;
 
     let shadowroot = document.createElement('div');
     shadowroot.appendChild(document.createElement('div'));
     let rootowner ={0:{}}
-    await renderClient(shadowroot.children[0], html`${()=>comp()}`,rootowner); //html`${async()=>await comp()}`
-    console.log('rootowner',rootowner)
+    await renderClient(shadowroot.children[0], html`${()=>comp()}`,rootowner, hydrating); //html`${async()=>await comp()}`
+    //console.log('rootowner',rootowner)
     compcount=0
 
     //FOR DEBUG//

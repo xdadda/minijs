@@ -2,10 +2,12 @@
   //BASED ON https://github.com/WebReflection/udomdiff
   export {diffArrays};
   import {renderClient} from './mini_dom.js';
+  import {html} from './mini_html.js';
   import {updateFragment,clearFragment} from './mini_dom_fragments.js';
 
 
   function insertHTML(item,parent,node,owner){
+    //console.log('insertHTML')
     const t = document.createComment('');
     parent.parent.insertBefore(t,node);
 
@@ -18,12 +20,12 @@
     return t;
   }
 
-  function replaceHTML(item,node,owner){
+  function replaceHTML(item,node,owner,){
 
     const newid=parseInt(Object.keys(owner).slice(-1)[0])+1
     let mystack={[newid]:{}};
     owner[newid]=mystack;
-    const frag = renderClient(node,item,owner);
+    const frag = renderClient(node,item,owner,);
     frag.prev.nextSibling.myid=newid;
     //console.log('replaceHTML',frag.myid,owner)
     return frag[0];
