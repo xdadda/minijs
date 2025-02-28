@@ -27,6 +27,6 @@ const onUnmount=/* #__PURE__ */isServer?()=>{}:ouC;
 export { onMount, onUnmount };
 
 export { serverFetch, Suspense } from './mini_utils.js';
-export { render, hydrate } from './mini_dom.js';
+export { render, hydrate, renderClient } from './mini_dom.js';
 
 export {serverState} from './mini_server_ctx.js';

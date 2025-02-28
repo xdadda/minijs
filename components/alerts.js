@@ -73,7 +73,7 @@ function _Modal({content, buttons, onCancel, onClose, type, placeholder='',width
 export async function prompt(msg,width,plc){
 
   return await new Promise((resolve,reject) => {
-    const app = document.querySelector('.app');
+    const app = document.body.querySelector('div'); //document.querySelector('.app');
     const div = document.createElement('div');
     app.appendChild(div);
     function handleClose(el,value){ el.parentElement.remove(); resolve(value) };
@@ -94,10 +94,10 @@ export async function prompt(msg,width,plc){
 }
 
 
-export async function confirm(msg){
+export async function confirm(msg,width){
 
   return await new Promise((resolve,reject) => {
-    const app = document.querySelector('.app');
+    const app = document.body.querySelector('div'); //document.querySelector('.app');
     const div = document.createElement('div');
     app.appendChild(div);
     function handleClose(el){ el.parentElement.remove(); resolve(true) };
@@ -109,7 +109,8 @@ export async function confirm(msg){
         {label:'OK', onClick:handleClose, focus:true }
       ],
       onCancel: handleCancel,
-      type:'confirm'
+      type:'confirm',
+      width
     }));
   });
 }
@@ -118,7 +119,7 @@ export async function confirm(msg){
 export async function alert(msg){
 
   return await new Promise((resolve,reject) => {
-    const app = document.querySelector('.app');
+    const app = document.body.querySelector('div'); //document.querySelector('.app');
     const div = document.createElement('div');
     app.appendChild(div);
     function handleClose(el){ el.parentElement.remove(); resolve(false) };

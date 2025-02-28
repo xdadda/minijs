@@ -3,7 +3,7 @@
   font-family: inherit;
   position: fixed;
   display: flex;
-  z-index: 999;
+  z-index: 100001;
   overflow: show;
   margin: auto;
   top: 0;
@@ -52,18 +52,3 @@
 .alert-message input{
 }
 
-.light .alert-message {
-  background-color: #d5d5d5;
-}
-
-.dark .alert-message {
-  background-color: #1f1f1f;
-  border: solid thin #000;
-}
-/*
-@media (prefers-color-scheme: light) {
-  .alert-message {
-    background-color: #f0f0f0;
-  }
-}
-*/
