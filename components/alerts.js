@@ -116,7 +116,7 @@ export async function confirm(msg,width){
 }
 
 
-export async function alert(msg){
+export async function alert(msg,width){
 
   return await new Promise((resolve,reject) => {
     const app = document.body.querySelector('div'); //document.querySelector('.app');
@@ -127,7 +127,8 @@ export async function alert(msg){
       content: msg,
       buttons: [{label:'OK', onClick:handleClose, focus:true }],
       onCancel: handleClose,
-      type:'alert'
+      type:'alert',
+      width
     }));
   });
 }

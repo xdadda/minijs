@@ -147,7 +147,7 @@ const DEBUGcounter=true;
                 const x = unmountqueue.length-unmountlen;
                 unmountfn = unmountqueue.splice(-x,x);
                 mystack[myid].unmount = unmountfn;
-                //console.log('>',myid,unmountfn)
+                //console.log('>',myid,mystack[myid])
               }
 
               let val= memo;
@@ -237,7 +237,10 @@ const DEBUGcounter=true;
                             }
                             else {
                               _reactComments();
-                              if(val.default) component = renderClient(component[0],html`${()=>val.default()}`,mystack, hydrating)
+                              if(val.default) {
+                                //console.log('LAZY COMP',val)
+                                component = renderClient(component[0],html`${()=>val.default()}`,mystack, hydrating)
+                              }
                               else component= await renderClient(component,val,mystack, hydrating); //NOTE: await here is important! TBD udnerstand why
                               //component= await renderClient(component,val,mystack); //NOTE: await here is important! TBD udnerstand why
                               //REMOVE LOADER IF PRESENT!

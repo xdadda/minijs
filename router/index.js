@@ -12,7 +12,7 @@
     //Single Page Application
     else if(!ssr && url!==store('url')) {
       store('url',url);
-      console.log('history push')
+      //console.log('history push')
       store('route').value=null; //dirty hack to trigger Router refresh
       if(!nohistory) window.history.pushState({}, null, url);
     }
@@ -33,7 +33,7 @@
           e.preventDefault(); // stop request to server for new html
           e.stopPropagation();
           const turl = window.location.href.replace(window.location.origin,'')
-          console.log('back',turl)
+          //console.log('back',turl)
           setRoute(turl,true)
         }
         window.addEventListener('popstate',  updateRoute);        
