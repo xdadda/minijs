@@ -1,0 +1,51 @@
+{
+  "name": "mini",
+  "version": "0.2.0",
+  "description": "lightweight declarative reactive framework based on signals, tagged template literals and components",
+  "type": "module",
+  "main": "index.js",
+  "sideEffects": false,
+  "scripts": {
+    "build": "vite build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xdadda/minijs.git"
+  },
+  "keywords": [
+    "reactive",
+    "UI",
+    "javascript",
+    "signals",
+    "literals"
+  ],
+  "author": "xdadda",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/xdadda/minijs/issues"
+  },
+  "homepage": "https://github.com/xdadda/minijs#readme",
+  "exports": {
+    ".": {
+      "import": "./dist/mini.js",
+      "require": "./dist/mini.umd.cjs"
+    },
+    "./store": {
+      "import": "./dist/store.js",
+      "require": "./dist/store.umd.cjs"
+    },
+    "./router": {
+      "import": "./dist/router.js",
+      "require": "./dist/router.umd.cjs"
+    },
+    "./components": {
+      "import": "./dist/components.js",
+      "require": "./dist/components.umd.cjs"
+    },
+    "./components.css": "./dist/mini.css"
+  },
+  "devDependencies": {
+    "rollup-plugin-minify-template-literals": "^1.1.7",
+    "vite": "^6.2.6"
+  }
+}
