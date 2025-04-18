@@ -1,137 +1,135 @@
-import { render as E, html as b, reactive as C, onMount as B, onUnmount as I, map as A } from "mini";
+import { render as b, html as C, reactive as h, onMount as B, onUnmount as I, map as M } from "mini";
 function P() {
   return "10000000-1000-4000-8000-100000000000".replace(
     /[018]/g,
     (r) => (+r ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +r / 4).toString(16)
   );
 }
-function $({ content: r, buttons: l, onCancel: n, onClose: s, type: u, placeholder: c = "", width: o }) {
+function E({ content: r, buttons: o, onCancel: l, onClose: s, type: u, placeholder: c = "", width: a }) {
   const t = P();
-  function a(e) {
-    e.preventDefault(), e.stopPropagation(), n(document.getElementById(t));
+  function i(e) {
+    e.preventDefault(), e.stopPropagation(), l(document.getElementById(t));
   }
-  function d(e) {
+  function n(e) {
     if (e.preventDefault(), e.stopPropagation(), s) return s(document.getElementById(t), document.getElementById("_in" + t).value);
   }
-  function i(e, p) {
+  function d(e, p) {
     e.preventDefault(), e.stopPropagation(), p(document.getElementById(t), document.getElementById("_in" + t)?.value);
   }
-  function v(e) {
-    e.key === "Escape" ? a(e) : e.key === "Enter" && d(e);
+  function f(e) {
+    e.key === "Escape" ? i(e) : e.key === "Enter" && n(e);
   }
   return u === "prompt" ? setTimeout(() => {
     document.getElementById("_in" + t)?.focus();
-  }, 10) : l && setTimeout(() => {
+  }, 10) : o && setTimeout(() => {
     document.getElementById("_btn" + t)?.focus();
-  }, 10), b`<div id="${t}" aria-busy="true" class="alert" @click="${a}"><div class="alert-message" @click="${(e) => e.stopPropagation()}" @keyup="${v}"><br><div class="msg" style="${o ? "width:" + o + "px;" : ""}">${r} ${u === "prompt" && `<br/><input type='text' id='_in${t}' @keyup="${v}" placeholder="${c || ""}"/>`}</div><br><div>${l?.map((e, p) => () => b`<button id="${e.focus ? "_btn" + t : ""}" class="${e.focus ? "_btnfocus" : ""}" @click="${(y) => i(y, e.onClick)}" tabindex="${p + 1}">${e.label}</button>`)}</div></div></div>`;
+  }, 10), C`<div id="${t}" aria-busy="true" class="alert" @click="${i}"><div class="alert-message" @click="${(e) => e.stopPropagation()}" @keyup="${f}"><br><div class="msg" style="${a ? "width:" + a + "px;" : ""}">${r} ${u === "prompt" && `<br/><input type='text' id='_in${t}' @keyup="${f}" placeholder="${c || ""}"/>`}</div><br><div>${o?.map((e, p) => () => C`<button id="${e.focus ? "_btn" + t : ""}" class="${e.focus ? "_btnfocus" : ""}" @click="${(v) => d(v, e.onClick)}" tabindex="${p + 1}">${e.label}</button>`)}</div></div></div>`;
 }
-async function F(r, l, n) {
+async function A(r, o, l) {
   return await new Promise((s, u) => {
-    const c = document.body.querySelector("div"), o = document.createElement("div");
-    c.appendChild(o);
-    function t(d, i) {
-      d.parentElement.remove(), s(i);
+    const c = document.body.querySelector("div"), a = document.createElement("div");
+    c.appendChild(a);
+    function t(n, d) {
+      n.parentElement.remove(), s(d);
     }
-    function a(d) {
-      d.parentElement.remove(), s(!1);
+    function i(n) {
+      n.parentElement.remove(), s(!1);
     }
-    E(o, () => $({
+    b(a, () => E({
       content: r,
       buttons: [
-        { label: "Cancel", onClick: a },
+        { label: "Cancel", onClick: i },
         { label: "OK", onClick: t, focus: !0 }
       ],
       onClose: t,
-      onCancel: a,
+      onCancel: i,
       type: "prompt",
-      placeholder: n,
-      width: l
+      placeholder: l,
+      width: o
     }));
   });
 }
-async function K(r, l) {
-  return await new Promise((n, s) => {
+async function F(r, o) {
+  return await new Promise((l, s) => {
     const u = document.body.querySelector("div"), c = document.createElement("div");
     u.appendChild(c);
-    function o(a) {
-      a.parentElement.remove(), n(!0);
+    function a(i) {
+      i.parentElement.remove(), l(!0);
     }
-    function t(a) {
-      a.parentElement.remove(), n(!1);
+    function t(i) {
+      i.parentElement.remove(), l(!1);
     }
-    E(c, () => $({
+    b(c, () => E({
       content: r,
       buttons: [
         { label: "Cancel", onClick: t },
-        { label: "OK", onClick: o, focus: !0 }
+        { label: "OK", onClick: a, focus: !0 }
       ],
       onCancel: t,
       type: "confirm",
-      width: l
+      width: o
     }));
   });
 }
-async function S(r, l) {
-  return await new Promise((n, s) => {
+async function K(r, o) {
+  return await new Promise((l, s) => {
     const u = document.body.querySelector("div"), c = document.createElement("div");
     u.appendChild(c);
-    function o(t) {
-      t.parentElement.remove(), n(!1);
+    function a(t) {
+      t.parentElement.remove(), l(!1);
     }
-    E(c, () => $({
+    b(c, () => E({
       content: r,
-      buttons: [{ label: "OK", onClick: o, focus: !0 }],
-      onCancel: o,
+      buttons: [{ label: "OK", onClick: a, focus: !0 }],
+      onCancel: a,
       type: "alert",
-      width: l
+      width: o
     }));
   });
 }
-function Y({
+function S({
   renderItem: r,
   //(idx)=>{..}
-  itemCount: l,
+  itemCount: o,
   //# of items (can be a number, signal of function)
-  rowHeight: n,
+  rowHeight: l,
   //in pixels
   nodePadding: s,
   //number of "padding" items
-  onUpdateRow: u = !1,
+  onUpdateRow: u,
   //triggered when virtual list is updated
-  onUpdateScroll: c = !1,
+  onUpdateScroll: c,
   //triggered when virtual list is updated
-  onMounted: o = !1,
-  parentHeight: t = 0
-  //in pixels (for SSR) TODO: fix a clearFragment error in mini_dom if this is set
+  onMounted: a
   //refresh=false
 }) {
-  const a = C();
-  let d, i, v = 0, e;
-  const p = C([]);
-  l.signal ? e = l : typeof l == "function" ? e = C(l) : e = { value: l };
-  function y() {
-    const f = Math.max(0, Math.floor(i.scrollTop / n) - s), h = i.offsetHeight;
-    m = Math.ceil(h / n) + 2 * s, m = Math.min(e.value - f, m);
-    const k = Math.floor(i.scrollTop / n), w = v + m - 1;
-    u && u(k, w);
-    const x = f * n;
-    a._value.firstElementChild.style.transform = `translateY(${x}px)`, c && c(i.scrollTop), v !== f && (v = f, p.value = new Array(m || 0).fill(null).map((T, M) => M + f));
+  const t = h();
+  let i, n, d, f;
+  const e = h([]);
+  o.signal ? f = o : typeof o == "function" ? f = h(o) : f = { value: o };
+  function p() {
+    const m = Math.max(0, Math.floor(n.scrollTop / l) - s), g = n.offsetHeight;
+    let y = Math.ceil(g / l) + 2 * s;
+    y = Math.min(f.value - m, y);
+    const _ = Math.floor(n.scrollTop / l), k = (d || 0) + y - 1;
+    u && u(_, k);
+    const w = m * l;
+    t._value.firstElementChild.style.transform = `translateY(${w}px)`, c && c(n.scrollTop), (d === void 0 || d !== m) && (d = m, e.value = new Array(y || 0).fill(null).map((T, x) => x + m));
   }
-  function _() {
-    d && cancelAnimationFrame(d), d = requestAnimationFrame(y);
+  function v() {
+    i && cancelAnimationFrame(i), i = requestAnimationFrame(p);
   }
-  const g = e.value * n + "px";
-  let m = Math.ceil(t / n) + 2 * s;
-  return m = Math.min(e.value, m), p.value = new Array(m || 0).fill(null).map((f, h) => h), B(() => {
-    const f = a._value;
-    f && (i = f.parentElement, i.style.overflowY !== "auto" && (i.style.overflowY = "auto"), i.addEventListener("scroll", _), y(), o && o());
+  const $ = f.value * l + "px";
+  return B(() => {
+    const m = t._value;
+    m && (n = m.parentElement, n.style.overflowY !== "auto" && (n.style.overflowY = "auto"), n.addEventListener("scroll", v), p(), a && a());
   }), I(() => {
-    i?.removeEventListener("scroll", _);
-  }), b`<div :ref="${a}" aria-role="listbox" style="height:${g};overflow:hidden;position:relative;will-change:transform"><div class="result-list" tabindex="0">${A(p, r)}</div></div>`;
+    n?.removeEventListener("scroll", v);
+  }), C`<div :ref="${t}" aria-role="listbox" style="height:${$};overflow:hidden;position:relative;will-change:transform"><div class="result-list" tabindex="0">${M(e, r)}</div></div>`;
 }
 export {
-  S as alert,
-  K as confirm,
-  F as prompt,
-  Y as virtual
+  K as alert,
+  F as confirm,
+  A as prompt,
+  S as virtual
 };
