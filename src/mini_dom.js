@@ -82,16 +82,16 @@ export { render, renderClient, onMount, onUnmount, map };
           reactive(async()=>{
 
               //intercept stale condition to stop reactivity of this function
-              if(!owner[myid]) return console.log('STALE!')
               if(owner[myid].stale) return delete owner[myid]; 
               if(owner.stale) return delete owner[myid]; //not sure it's needed
               //////////////////////
 
-                  //set all children  to stale! will stop reactivity next time they get called
-                  function _staleChildren(o){
-                    Object.getOwnPropertySymbols(o).forEach(k=>{if(o[k]?.frag) {o[k].stale=true; _staleChildren(o[k]); delete o[k]; }})
-                  }
-                  _staleChildren(owner[myid])
+                //set all children to stale and remove them to functions' tree! 
+                //this will stop reactivity next time they get called
+                function _staleChildren(o) {
+                  Object.getOwnPropertySymbols(o).forEach(k=>{if(o[k]?.frag) {o[k].stale=true; _staleChildren(o[k]); delete o[k]; }})
+                }
+                _staleChildren(owner[myid])
 
                 const mountlen = mountqueue.length, unmountlen = unmountqueue.length;
                 const unmountlist = _extractunmounts(owner[myid]);

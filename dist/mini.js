@@ -41,8 +41,8 @@ function R(e, ...t) {
   }
   return i.html = !0, i;
 }
-let S, v = null, b = 0, E = [], q, P = !1;
-const $ = 0, B = 1, A = 2;
+let N, v = null, b = 0, _ = [], q, T = !1;
+const $ = 0, B = 1, C = 2;
 function O(e, t) {
   const n = new K(e, t?.effect, t?.label);
   return t?.equals && (n.equals = t.equals), n.signal = !0, n;
@@ -63,7 +63,7 @@ class K {
   cleanups = [];
   equals = J;
   constructor(t, n, i) {
-    typeof t == "function" ? (this.fn = t, this._value = void 0, this.effect = n || !1, this.state = A, n && (E.push(this), q?.(this))) : (this.fn = void 0, this._value = t, this.state = $, this.effect = !1), i && (this.label = i);
+    typeof t == "function" ? (this.fn = t, this._value = void 0, this.effect = n || !1, this.state = C, n && (_.push(this), q?.(this))) : (this.fn = void 0, this._value = t, this.state = $, this.effect = !1), i && (this.label = i);
   }
   get value() {
     return this.get();
@@ -72,32 +72,32 @@ class K {
     this.set(t);
   }
   get() {
-    return S && (!v && S.sources && S.sources[b] == this ? b++ : v ? v.push(this) : v = [this]), this.fn && this.updateIfNecessary(), this._value;
+    return N && (!v && N.sources && N.sources[b] == this ? b++ : v ? v.push(this) : v = [this]), this.fn && this.updateIfNecessary(), this._value;
   }
   set(t) {
     if (typeof t == "function") {
       const n = t;
-      n !== this.fn && this.stale(A), this.fn = n;
+      n !== this.fn && this.stale(C), this.fn = n;
     } else {
       this.fn && (this.removeParentObservers(0), this.sources = null, this.fn = void 0);
       const n = t;
       if (!this.equals(this._value, n)) {
         if (this.observers)
           for (let i = 0; i < this.observers.length; i++)
-            this.observers[i].stale(A);
+            this.observers[i].stale(C);
         this._value = n;
       }
     }
   }
   stale(t) {
-    if (this.state < t && (this.state === $ && this.effect && (E.push(this), q?.(this)), this.state = t, this.observers))
+    if (this.state < t && (this.state === $ && this.effect && (_.push(this), q?.(this)), this.state = t, this.observers))
       for (let n = 0; n < this.observers.length; n++)
         this.observers[n].stale(B);
   }
   /** run the computation fn, updating the cached value */
   update() {
-    const t = this._value, n = S, i = v, u = b;
-    S = this, v = null, b = 0;
+    const t = this._value, n = N, i = v, u = b;
+    N = this, v = null, b = 0;
     try {
       if (this.cleanups.length && (this.cleanups.forEach((r) => r(this._value)), this.cleanups = []), this._value = this.fn(), v) {
         if (this.removeParentObservers(b), this.sources && b > 0) {
@@ -112,12 +112,12 @@ class K {
         }
       } else this.sources && b < this.sources.length && (this.removeParentObservers(b), this.sources.length = b);
     } finally {
-      v = i, S = n, b = u;
+      v = i, N = n, b = u;
     }
     if (!this.equals(t, this._value) && this.observers)
       for (let r = 0; r < this.observers.length; r++) {
         const c = this.observers[r];
-        c.state = A;
+        c.state = C;
       }
     this.state = $;
   }
@@ -125,10 +125,10 @@ class K {
   updateIfNecessary() {
     if (this.state === B) {
       for (const t of this.sources)
-        if (t.updateIfNecessary(), this.state === A)
+        if (t.updateIfNecessary(), this.state === C)
           break;
     }
-    this.state === A && this.update(), this.state = $;
+    this.state === C && this.update(), this.state = $;
   }
   removeParentObservers(t) {
     if (this.sources)
@@ -139,23 +139,23 @@ class K {
   }
 }
 function H(e) {
-  const t = S, n = v, i = b;
-  S = void 0, v = null, b = 0;
+  const t = N, n = v, i = b;
+  N = void 0, v = null, b = 0;
   const u = e();
-  return v = n, S = t, b = i, u;
+  return v = n, N = t, b = i, u;
 }
 function X() {
-  for (let e = 0; e < E.length; e++)
-    E[e].get();
-  E.length = 0;
+  for (let e = 0; e < _.length; e++)
+    _[e].get();
+  _.length = 0;
 }
 function Y(e = Z) {
   q = e;
 }
 Y();
 function Z() {
-  P || (P = !0, queueMicrotask(() => {
-    P = !1, X();
+  T || (T = !0, queueMicrotask(() => {
+    T = !1, X();
   }));
 }
 function F(e) {
@@ -165,9 +165,9 @@ function F(e) {
   } else return Array.isArray(e) && !e.fragment ? e[0] ? (e[0].before(document.createTextNode("")), e[e.length - 1].after(document.createTextNode("")), e.parent = e[0].parentNode, e.prev = e[0].previousSibling, e.next = e[e.length - 1].nextSibling, e.fragment = !0, e) : !1 : (console.error("MiNi: unknown input for createFragment"), !1);
 }
 function V(e, t) {
-  return e.fragment && Array.isArray(e) && Array.isArray(t) ? (t.prev = e.prev, t.next = e.next, t.parent = e.parent, N(e), t.next ? t.next.before(...t) : t.parent.append(...t), t.fragment = !0) : console.error("MiNi: replaceFragments unknown input", e, t), t;
+  return e.fragment && Array.isArray(e) && Array.isArray(t) ? (t.prev = e.prev, t.next = e.next, t.parent = e.parent, S(e), t.next ? t.next.before(...t) : t.parent.append(...t), t.fragment = !0) : console.error("MiNi: replaceFragments unknown input", e, t), t;
 }
-function N(e) {
+function S(e) {
   if (!e.prev && !e.next && e.parent)
     e.parent.textContent = "";
   else {
@@ -203,14 +203,14 @@ function k(e, t, n, i) {
   t.parent.insertBefore(u, n);
   const r = Symbol("$item");
   i[r] = { frag: !0 };
-  const c = _(u, e, i[r]);
+  const c = E(u, e, i[r]);
   return c.prev && (c.prev.nextElementSibling.myid = r), u;
 }
 function ee(e, t, n) {
   I(t.myid, n);
   const i = Symbol("$item");
   n[i] = { frag: !0 };
-  const u = _(t, e, n[i]);
+  const u = E(t, e, n[i]);
   return u.prev && (u.prev.nextElementSibling.myid = i), u[0];
 }
 function L(e, t = []) {
@@ -237,7 +237,7 @@ function W(e, t = [], n = [], i, u) {
   w(e);
   let r = e.next, c = e.parent, l = 0, o = t?.length, s = 0, f = n?.length, a = f, h = null, p = new Array(a), x = !1, m = e;
   if (a === 0) {
-    G(u), N(e);
+    G(u), S(e);
     return;
   }
   for (; l < o || s < f; )
@@ -273,15 +273,15 @@ function W(e, t = [], n = [], i, u) {
           g !== void 0 && (p[g] = m[d], y++), d++;
         }
         if (x = !0, !y)
-          return G(u), N(e), W(e, [], n, i, u);
+          return G(u), S(e), W(e, [], n, i, u);
       }
       if (h.has(t[l])) {
         const d = h.get(t[l]);
         if (s < d && d < f) {
-          let g = l, T = 1;
-          for (; ++g < o && g < f && h.get(t[g]) === d + T; )
-            T++;
-          if (T > d - s) {
+          let g = l, P = 1;
+          for (; ++g < o && g < f && h.get(t[g]) === d + P; )
+            P++;
+          if (P > d - s) {
             const j = m[l];
             for (; s < d; )
               p && p[s] ? c.insertBefore(p[s], j) : p[s] = k(() => i(n[s]), e, j, u), s++;
@@ -293,9 +293,9 @@ function W(e, t = [], n = [], i, u) {
         I(m[l].myid, u), c.removeChild(m[l++]);
     }
 }
-let C = [];
+let A = [];
 function le(e) {
-  C.push(e);
+  A.push(e);
 }
 let M = [];
 function ue(e) {
@@ -315,7 +315,7 @@ function te(e, t) {
 }
 function ne(e, t) {
   if (t.hidden && (t.hidden = !1), e?.html)
-    _(t.frag, e, t), t.mount && setTimeout(() => {
+    E(t.frag, e, t), t.mount && setTimeout(() => {
       t.mount?.forEach((n) => n()), t.mount = void 0;
     }, 0);
   else if (Array.isArray(e))
@@ -323,7 +323,7 @@ function ne(e, t) {
       t.mount?.forEach((n) => n()), t.mount = void 0;
     }, 0);
   else if (e === !1 || e === "")
-    N(t.frag), t.hidden = !0;
+    S(t.frag), t.hidden = !0;
   else {
     let n = t.frag.prev.nextSibling;
     if (n.nodeType !== 3) {
@@ -337,13 +337,12 @@ function ie(e) {
   const t = Object.getOwnPropertySymbols(e).filter((i) => e[i]?.loader)?.[0];
   if (!t) return;
   const n = e[t].frag;
-  N(n), delete e[t];
+  S(n), delete e[t];
 }
 function D(e, t, n) {
   const i = Symbol("$comp");
   if (n[i] = {}, e.before(document.createTextNode("")), e.after(document.createTextNode("")), n[i].frag = F(e), t._map) return t(n, i);
   O(async () => {
-    if (!n[i]) return console.log("STALE!");
     if (n[i].stale || n.stale) return delete n[i];
     function u(s) {
       Object.getOwnPropertySymbols(s).forEach((f) => {
@@ -351,12 +350,12 @@ function D(e, t, n) {
       });
     }
     u(n[i]);
-    const r = C.length, c = M.length, l = Q(n[i]);
+    const r = A.length, c = M.length, l = Q(n[i]);
     l.length && l.forEach((s) => typeof s == "function" && s());
     let o = t();
-    if (o instanceof Promise && (o = await o), C.length > r) {
-      const s = C.length - r;
-      n[i].mount = C.splice(-s, s);
+    if (o instanceof Promise && (o = await o), A.length > r) {
+      const s = A.length - r;
+      n[i].mount = A.splice(-s, s);
     }
     if (M.length > c) {
       const s = M.length - c;
@@ -369,7 +368,7 @@ function D(e, t, n) {
 function oe(e, t) {
   const n = function(...i) {
     const [u, r] = i;
-    N(u[r].frag);
+    S(u[r].frag);
     let c;
     O(() => {
       if (u[r].stale) return delete u[r];
@@ -400,7 +399,7 @@ function re(e, t) {
     { acceptNode: (n) => n.textContent === t ? 1 : 2 }
   ).nextNode();
 }
-function _(e, t, n = { 0: {} }) {
+function E(e, t, n = { 0: {} }) {
   if (!e) return console.error("MiNi: renderClient missing node element");
   if (e.nodeType && (e = F(e)), typeof t == "function" && !t.html && (t = t()), typeof t == "function" && t.html && (t = t()), t.html === void 0) return console.error("MiNi: unknown input to renderClient", t);
   const { html: i, reactarray: u } = t, r = document.createElement("template");
@@ -410,7 +409,7 @@ function _(e, t, n = { 0: {} }) {
     let o, { type: s, key: f, v: a } = u[l];
     switch (s) {
       case "node":
-        o = re(r.content, "rx" + f), o ? typeof a == "function" ? D(o, a, n) : a instanceof Promise ? console.error("MiNi: wrap async component in ()=>{}") : a.html === !0 ? o = _(o, a, n) : console.error("MiNi: unknown node value", a) : console.error("MiNi: cannot find placeholder", "rx" + f, c);
+        o = re(r.content, "rx" + f), o ? typeof a == "function" ? D(o, a, n) : a instanceof Promise ? console.error("MiNi: wrap async component in ()=>{}") : a.html === !0 ? o = E(o, a, n) : console.error("MiNi: unknown node value", a) : console.error("MiNi: cannot find placeholder", "rx" + f, c);
         break;
       /*
       case 'for':
@@ -426,13 +425,13 @@ function _(e, t, n = { 0: {} }) {
         break;
     }
   }
-  return N(e), e.next ? e.next.before(r.content) : c?.appendChild(r.content), e;
+  return S(e), e.next ? e.next.before(r.content) : c?.appendChild(r.content), e;
 }
 async function ce(e, t, n) {
   if (e.appendChild(document.createElement("div")), typeof t != "function") return console.error("MiNi: render 2nd arg must be a function");
   let i = { 0: {} };
   try {
-    await _(e.children[0], R`${() => t()}`, i), n && console.log("rootowner", i);
+    await E(e.children[0], R`${() => t()}`, i), n && console.log("rootowner", i);
   } catch (u) {
     console.error("MiNi: render", u);
   }
