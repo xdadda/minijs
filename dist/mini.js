@@ -364,7 +364,7 @@ function D(e, t, n) {
     t._loader && (n[i].loader = !0), t._suspense && (n[i].suspense = !0, ie(n), delete t._suspense), s = typeof s == "function" ? H(s) : s, ne(s, n[i]);
   }, { effect: !0 });
 }
-function oe({ array: e, renderItem: t }) {
+function oe(e, t) {
   const n = function(...i) {
     const [l, r] = i;
     S(l[r].frag);

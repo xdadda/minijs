@@ -1,9 +1,9 @@
 {
-  "name": "mini",
-  "version": "0.2.0",
+  "name": "@xdadda/mini",
+  "version": "0.2.1",
   "description": "lightweight declarative reactive framework based on signals, tagged template literals and components",
   "type": "module",
-  "main": "index.js",
+  "main": "src/index.js",
   "sideEffects": false,
   "scripts": {
     "build": "vite build"

@@ -1,4 +1,4 @@
-import { render as E, html as b, reactive as C, onMount as M, onUnmount as B, map as A } from "mini";
+import { render as E, html as b, reactive as C, onMount as B, onUnmount as I, map as A } from "mini";
 function P() {
   return "10000000-1000-4000-8000-100000000000".replace(
     /[018]/g,
@@ -115,22 +115,19 @@ function Y({
     const k = Math.floor(i.scrollTop / n), w = v + m - 1;
     u && u(k, w);
     const x = f * n;
-    a._value.firstElementChild.style.transform = `translateY(${x}px)`, c && c(i.scrollTop), v !== f && (v = f, p.value = new Array(m || 0).fill(null).map((T, I) => I + f));
+    a._value.firstElementChild.style.transform = `translateY(${x}px)`, c && c(i.scrollTop), v !== f && (v = f, p.value = new Array(m || 0).fill(null).map((T, M) => M + f));
   }
   function _() {
     d && cancelAnimationFrame(d), d = requestAnimationFrame(y);
   }
   const g = e.value * n + "px";
   let m = Math.ceil(t / n) + 2 * s;
-  return m = Math.min(e.value, m), p.value = new Array(m || 0).fill(null).map((f, h) => h), M(() => {
+  return m = Math.min(e.value, m), p.value = new Array(m || 0).fill(null).map((f, h) => h), B(() => {
     const f = a._value;
     f && (i = f.parentElement, i.style.overflowY !== "auto" && (i.style.overflowY = "auto"), i.addEventListener("scroll", _), y(), o && o());
-  }), B(() => {
+  }), I(() => {
     i?.removeEventListener("scroll", _);
-  }), b`<div :ref="${a}" aria-role="listbox" style="height:${g};overflow:hidden;position:relative;will-change:transform"><div class="result-list" tabindex="0">${A({
-    array: p,
-    renderItem: r
-  })}</div></div>`;
+  }), b`<div :ref="${a}" aria-role="listbox" style="height:${g};overflow:hidden;position:relative;will-change:transform"><div class="result-list" tabindex="0">${A(p, r)}</div></div>`;
 }
 export {
   S as alert,
