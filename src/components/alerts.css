@@ -13,7 +13,8 @@
   text-align: center;
   color: inherit;
 }
-  /* Transparent Overlay */
+
+/* Transparent Overlay */
 .alert::before {
     content: '';
     display: block;

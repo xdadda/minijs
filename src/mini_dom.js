@@ -43,14 +43,8 @@ export { render, renderClient, onMount, onUnmount, map };
                   if(owner.mount) setTimeout(()=>{owner.mount?.forEach(f=>f());owner.mount=undefined},0); //nextTick
                 }
                 else if(val===false || val==='') { //hide FRAGMENT
-                  //console.log('HIDE COMPONENT',owner[myid],owner)
                   clearFragment(owner.frag);
                   owner.hidden=true;
-                  //set all  children  to stale! will stop reactivity next time they get called
-                  function _staleChildren(o){
-                    Object.getOwnPropertySymbols(o).forEach(k=>{if(o[k]?.frag) {o[k].stale=true; _staleChildren(o[k])}})
-                  }
-                  _staleChildren(owner)
                 }
                 else { //render VALUE
                   let node = owner.frag.prev.nextSibling
@@ -88,9 +82,16 @@ export { render, renderClient, onMount, onUnmount, map };
           reactive(async()=>{
 
               //intercept stale condition to stop reactivity of this function
+              if(!owner[myid]) return console.log('STALE!')
               if(owner[myid].stale) return delete owner[myid]; 
               if(owner.stale) return delete owner[myid]; //not sure it's needed
               //////////////////////
+
+                  //set all children  to stale! will stop reactivity next time they get called
+                  function _staleChildren(o){
+                    Object.getOwnPropertySymbols(o).forEach(k=>{if(o[k]?.frag) {o[k].stale=true; _staleChildren(o[k]); delete o[k]; }})
+                  }
+                  _staleChildren(owner[myid])
 
                 const mountlen = mountqueue.length, unmountlen = unmountqueue.length;
                 const unmountlist = _extractunmounts(owner[myid]);

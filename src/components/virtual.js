@@ -7,33 +7,20 @@ export function virtual({
         itemCount,        //# of items (can be a number, signal of function)
         rowHeight,        //in pixels
         nodePadding,      //number of "padding" items
-        onUpdateRow,   //triggered when virtual list is updated
+        onUpdateRow,      //triggered when virtual list is updated
         onUpdateScroll,   //triggered when virtual list is updated
         onMounted,
-        //refresh=false
       }){
 
         const virtualid=reactive(); //=reactive(uuidv4()); //needs to be a signal for hydration
         let animationFrame, container;
         let _prev_startN, _itemCount;
 
-        //let offsetY=0
-        //const offsetY=reactive(0)
-        //const scrollY=reactive(0)
-        //const actualRow = reactive(0)
         const visibleChildren = reactive([])
 
         if(itemCount.signal) _itemCount=itemCount;
         else if(typeof itemCount==='function') _itemCount=reactive(itemCount);
         else _itemCount={value:itemCount};
-
-        /*
-        let _refresh;
-        if(refresh.signal) _refresh=refresh;
-        else if(typeof refresh==='function') _refresh=reactive(refresh);
-        else _refresh={value:refresh};
-        */
-        //console.log('VIRTUAL')
 
           function updateScroll(){
             const _startN =  Math.max(0,Math.floor(container.scrollTop / rowHeight) - nodePadding);
@@ -45,13 +32,9 @@ export function virtual({
             const lastrow=(_prev_startN||0)+visibleNodesCount-1
             if(onUpdateRow) onUpdateRow(firstrow,lastrow)
 
-            //offsetY.value = _startN * rowHeight;
             const offsetY = _startN * rowHeight;
             virtualid._value.firstElementChild.style.transform=`translateY(${offsetY}px)`
-            //console.log('updateScroll',_startN,offsetY,container.scrollTop)
             if(onUpdateScroll) onUpdateScroll(container.scrollTop)
-            //scrollY.value = container.scrollTop;
-
 
             if(_prev_startN===undefined || _prev_startN!==_startN) {
               _prev_startN=_startN;
@@ -66,16 +49,8 @@ export function virtual({
 
         const totalContentHeight = _itemCount.value * rowHeight + 'px';
 
-        /* FOR SSR
-        if(parentHeight){
-          let visibleNodesCount = Math.ceil(parentHeight|| / rowHeight)+2*nodePadding; // + 2 * nodePadding not needed for SSR
-          visibleNodesCount = Math.min(_itemCount.value, visibleNodesCount);
-          visibleChildren.value=new Array(visibleNodesCount||0).fill(null).map((_, index) => index);  
-        }
-        */
-
         onMount(()=>{
-          const el = virtualid._value //document.getElementById(virtualid._value)
+          const el = virtualid._value
           if(!el) return
           container=el.parentElement
           if(container.style.overflowY!=='auto') container.style.overflowY='auto'

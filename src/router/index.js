@@ -21,8 +21,6 @@
 
   //opt {nohistory:false, replacehistory:false}
   function setRoute(url,opt={nohistory:false, replacehistory:false}){
-    //console.log('setRoute',url,store('url'))
-    //Single Page Application
     if(url!==store('$url').value) {
       store('$url').value=url;
       //default update browser history
@@ -39,7 +37,7 @@
 
   async function Router({routes, loader=false, handleAuth}){
     if(!store('$route')) {
-      console.log('>>INIT Router<<')
+      //console.log('>>INIT Router<<')
       store('$url',reactive(window.location.href.replace(window.location.origin,'')))
 
       // INTERCEPT BROWSER BACK BUTTON in the browser

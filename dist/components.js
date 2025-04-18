@@ -101,7 +101,6 @@ function S({
   onUpdateScroll: c,
   //triggered when virtual list is updated
   onMounted: a
-  //refresh=false
 }) {
   const t = h();
   let i, n, d, f;
