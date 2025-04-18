@@ -82,6 +82,7 @@ export { render, renderClient, onMount, onUnmount, map };
           reactive(async()=>{
 
               //intercept stale condition to stop reactivity of this function
+              if(!owner[myid]) return;
               if(owner[myid].stale) return delete owner[myid]; 
               if(owner.stale) return delete owner[myid]; //not sure it's needed
               //////////////////////

@@ -343,6 +343,7 @@ function D(e, t, n) {
   const i = Symbol("$comp");
   if (n[i] = {}, e.before(document.createTextNode("")), e.after(document.createTextNode("")), n[i].frag = F(e), t._map) return t(n, i);
   O(async () => {
+    if (!n[i]) return;
     if (n[i].stale || n.stale) return delete n[i];
     function u(s) {
       Object.getOwnPropertySymbols(s).forEach((f) => {
