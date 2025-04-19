@@ -3,7 +3,7 @@
 // an async and customizable implementation of window.alert()/.prompt()/.confirm()
 // without using signals
 
-import { html, render } from 'mini';
+import { html, render, onMount } from 'mini';
 import './alerts.css';
 
   //using this instead of crypto.randomUUID() to be able to work not-localhost in dev mode

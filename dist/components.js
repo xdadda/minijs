@@ -1,14 +1,14 @@
-import { render as E, html as C, reactive as h, onMount as M, onUnmount as B, map as I } from "mini";
+import { render as E, onMount as $, html as C, reactive as h, onUnmount as I, map as M } from "mini";
 function P() {
   return "10000000-1000-4000-8000-100000000000".replace(
     /[018]/g,
     (r) => (+r ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +r / 4).toString(16)
   );
 }
-function b({ content: r, buttons: o, onCancel: l, onClose: s, type: u, placeholder: c = "", width: a }) {
+function b({ content: r, buttons: l, onCancel: o, onClose: s, type: u, placeholder: c = "", width: i }) {
   const e = P();
-  function i(t) {
-    t.preventDefault(), t.stopPropagation(), l(document.getElementById(e));
+  function a(t) {
+    t.preventDefault(), t.stopPropagation(), o(document.getElementById(e));
   }
   function n(t) {
     if (t.preventDefault(), t.stopPropagation(), s) return s(document.getElementById(e), document.getElementById("_in" + e).value);
@@ -17,84 +17,84 @@ function b({ content: r, buttons: o, onCancel: l, onClose: s, type: u, placehold
     t.preventDefault(), t.stopPropagation(), p(document.getElementById(e), document.getElementById("_in" + e)?.value);
   }
   function f(t) {
-    t.key === "Escape" ? i(t) : t.key === "Enter" && n(t);
+    t.key === "Escape" ? a(t) : t.key === "Enter" && n(t);
   }
-  return onMount(() => {
+  return $(() => {
     u === "prompt" ? setTimeout(() => {
       document.getElementById("_in" + e)?.focus();
-    }, 10) : o && setTimeout(() => {
+    }, 10) : l && setTimeout(() => {
       document.getElementById("_btn" + e)?.focus();
     }, 10);
-  }), C`<div id="${e}" aria-busy="true" class="alert" @click="${i}"><div class="alert-message" @click="${(t) => t.stopPropagation()}" @keyup="${f}"><div class="msg" style="${a ? "width:" + a + "px;" : ""}">${r} ${u === "prompt" && `<br/><input type='text' id='_in${e}' @keyup="${f}" placeholder="${c || ""}"/>`}</div><div>${o?.map((t, p) => () => C`<button id="${t.focus ? "_btn" + e : ""}" @click="${(v) => d(v, t.onClick)}" tabindex="${p + 1}">${t.label}</button>`)}</div></div></div>`;
+  }), C`<div id="${e}" aria-busy="true" class="alert" @click="${a}"><div class="alert-message" @click="${(t) => t.stopPropagation()}" @keyup="${f}"><div class="msg" style="${i ? "width:" + i + "px;" : ""}">${r} ${u === "prompt" && `<br/><input type='text' id='_in${e}' @keyup="${f}" placeholder="${c || ""}"/>`}</div><div>${l?.map((t, p) => () => C`<button id="${t.focus ? "_btn" + e : ""}" @click="${(v) => d(v, t.onClick)}" tabindex="${p + 1}">${t.label}</button>`)}</div></div></div>`;
 }
-async function A(r, o, l) {
+async function A(r, l, o) {
   return await new Promise((s, u) => {
-    const c = document.body.querySelector("div"), a = document.createElement("div");
-    c.appendChild(a);
+    const c = document.body.querySelector("div"), i = document.createElement("div");
+    c.appendChild(i);
     function e(n, d) {
       n.parentElement.remove(), s(d);
     }
-    function i(n) {
+    function a(n) {
       n.parentElement.remove(), s(!1);
     }
-    E(a, () => b({
+    E(i, () => b({
       content: r,
       buttons: [
-        { label: "Cancel", onClick: i },
+        { label: "Cancel", onClick: a },
         { label: "OK", onClick: e, focus: !0 }
       ],
       onClose: e,
-      onCancel: i,
+      onCancel: a,
       type: "prompt",
-      placeholder: l,
-      width: o
+      placeholder: o,
+      width: l
     }));
   });
 }
-async function F(r, o) {
-  return await new Promise((l, s) => {
+async function F(r, l) {
+  return await new Promise((o, s) => {
     const u = document.body.querySelector("div"), c = document.createElement("div");
     u.appendChild(c);
-    function a(i) {
-      i.parentElement.remove(), l(!0);
+    function i(a) {
+      a.parentElement.remove(), o(!0);
     }
-    function e(i) {
-      i.parentElement.remove(), l(!1);
+    function e(a) {
+      a.parentElement.remove(), o(!1);
     }
     E(c, () => b({
       content: r,
       buttons: [
         { label: "Cancel", onClick: e },
-        { label: "OK", onClick: a, focus: !0 }
+        { label: "OK", onClick: i, focus: !0 }
       ],
       onCancel: e,
       type: "confirm",
-      width: o
+      width: l
     }));
   });
 }
-async function K(r, o) {
-  return await new Promise((l, s) => {
+async function K(r, l) {
+  return await new Promise((o, s) => {
     const u = document.body.querySelector("div"), c = document.createElement("div");
     u.appendChild(c);
-    function a(e) {
-      e.parentElement.remove(), l(!1);
+    function i(e) {
+      e.parentElement.remove(), o(!1);
     }
     E(c, () => b({
       content: r,
-      buttons: [{ label: "OK", onClick: a, focus: !0 }],
-      onCancel: a,
+      buttons: [{ label: "OK", onClick: i, focus: !0 }],
+      onCancel: i,
       type: "alert",
-      width: o
+      width: l
     }));
   });
 }
 function S({
   renderItem: r,
   //(idx)=>{..}
-  itemCount: o,
+  itemCount: l,
   //# of items (can be a number, signal of function)
-  rowHeight: l,
+  rowHeight: o,
   //in pixels
   nodePadding: s,
   //number of "padding" items
@@ -102,31 +102,31 @@ function S({
   //triggered when virtual list is updated
   onUpdateScroll: c,
   //triggered when virtual list is updated
-  onMounted: a
+  onMounted: i
 }) {
   const e = h();
-  let i, n, d, f;
+  let a, n, d, f;
   const t = h([]);
-  o.signal ? f = o : typeof o == "function" ? f = h(o) : f = { value: o };
+  l.signal ? f = l : typeof l == "function" ? f = h(l) : f = { value: l };
   function p() {
-    const m = Math.max(0, Math.floor(n.scrollTop / l) - s), g = n.offsetHeight;
-    let y = Math.ceil(g / l) + 2 * s;
+    const m = Math.max(0, Math.floor(n.scrollTop / o) - s), _ = n.offsetHeight;
+    let y = Math.ceil(_ / o) + 2 * s;
     y = Math.min(f.value - m, y);
-    const _ = Math.floor(n.scrollTop / l), k = (d || 0) + y - 1;
-    u && u(_, k);
-    const w = m * l;
-    e._value.firstElementChild.style.transform = `translateY(${w}px)`, c && c(n.scrollTop), (d === void 0 || d !== m) && (d = m, t.value = new Array(y || 0).fill(null).map((T, x) => x + m));
+    const k = Math.floor(n.scrollTop / o), w = (d || 0) + y - 1;
+    u && u(k, w);
+    const x = m * o;
+    e._value.firstElementChild.style.transform = `translateY(${x}px)`, c && c(n.scrollTop), (d === void 0 || d !== m) && (d = m, t.value = new Array(y || 0).fill(null).map((T, B) => B + m));
   }
   function v() {
-    i && cancelAnimationFrame(i), i = requestAnimationFrame(p);
+    a && cancelAnimationFrame(a), a = requestAnimationFrame(p);
   }
-  const $ = f.value * l + "px";
-  return M(() => {
+  const g = f.value * o + "px";
+  return $(() => {
     const m = e._value;
-    m && (n = m.parentElement, n.style.overflowY !== "auto" && (n.style.overflowY = "auto"), n.addEventListener("scroll", v), p(), a && a());
-  }), B(() => {
+    m && (n = m.parentElement, n.style.overflowY !== "auto" && (n.style.overflowY = "auto"), n.addEventListener("scroll", v), p(), i && i());
+  }), I(() => {
     n?.removeEventListener("scroll", v);
-  }), C`<div :ref="${e}" aria-role="listbox" style="height:${$};overflow:hidden;position:relative;will-change:transform"><div class="result-list" tabindex="0">${I(t, r)}</div></div>`;
+  }), C`<div :ref="${e}" aria-role="listbox" style="height:${g};overflow:hidden;position:relative;will-change:transform"><div class="result-list" tabindex="0">${M(t, r)}</div></div>`;
 }
 export {
   K as alert,
