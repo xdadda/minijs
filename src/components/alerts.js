@@ -42,8 +42,10 @@ function _Modal({content, buttons, onCancel, onClose, type, placeholder='',width
     else if(e.key==="Enter") handleClose(e);
   }
 
-  if(type==='prompt') setTimeout(()=>{document.getElementById('_in'+alertid)?.focus()},10);
-  else if(buttons) setTimeout(()=>{document.getElementById('_btn'+alertid)?.focus()},10);
+  onMount(()=>{
+    if(type==='prompt') setTimeout(()=>{document.getElementById('_in'+alertid)?.focus()},10);
+    else if(buttons) setTimeout(()=>{document.getElementById('_btn'+alertid)?.focus()},10);    
+  })
 
   return html`
     <div id="${alertid}" aria-busy="true" class='alert' @click="${handleCancel}">
@@ -55,7 +57,6 @@ function _Modal({content, buttons, onCancel, onClose, type, placeholder='',width
         <div>
           ${ buttons?.map((b,i)=> ()=> html`
                 <button id="${b.focus?('_btn'+alertid):''}"
-                        ${b.focus&&'selected'}
                         @click="${(e)=>handleClick(e,b.onClick)}" 
                         tabindex="${i+1}"
                   >

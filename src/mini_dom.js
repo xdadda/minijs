@@ -83,8 +83,7 @@ export { render, renderClient, onMount, onUnmount, map };
 
               //intercept stale condition to stop reactivity of this function
               if(!owner[myid]) return;
-              if(owner[myid].stale) return delete owner[myid]; 
-              if(owner.stale) return delete owner[myid]; //not sure it's needed
+              if(owner.stale || owner[myid].stale) return delete owner[myid]; 
               //////////////////////
 
                 //set all children to stale and remove them to functions' tree! 
@@ -140,7 +139,8 @@ export { render, renderClient, onMount, onUnmount, map };
 
           let oldarray;
           reactive(()=>{
-            if(owner[myid].stale) return delete owner[myid]; //this will stop reactive chain
+            if(!owner[myid]) return;
+            if(owner.stale || owner[myid].stale) return delete owner[myid]; //this will stop reactive chain
 
             const newarray = array.signal? array.value : array;
             untrack(()=>diffArrays(owner[myid].frag, oldarray, newarray, renderItem, owner[myid]));
@@ -166,8 +166,8 @@ export { render, renderClient, onMount, onUnmount, map };
           const memo = reactive(v);
 
           reactive(()=>{
-            if(owner[myid].stale) return delete owner[myid]; //this will stop reactive chain
-            if(owner.stale) return delete owner[myid]; //this will stop reactive chain
+            if(!owner[myid]) return;
+            if(owner.stale || owner[myid].stale) return delete owner[myid]; //this will stop reactive chain
 
             let val= memo.value;
             if(key==='value') {

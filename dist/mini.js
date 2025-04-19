@@ -344,7 +344,7 @@ function D(e, t, n) {
   if (n[i] = {}, e.before(document.createTextNode("")), e.after(document.createTextNode("")), n[i].frag = F(e), t._map) return t(n, i);
   O(async () => {
     if (!n[i]) return;
-    if (n[i].stale || n.stale) return delete n[i];
+    if (n.stale || n[i].stale) return delete n[i];
     function u(s) {
       Object.getOwnPropertySymbols(s).forEach((f) => {
         s[f]?.frag && (s[f].stale = !0, u(s[f]), delete s[f]);
@@ -372,7 +372,8 @@ function oe(e, t) {
     S(u[r].frag);
     let c;
     O(() => {
-      if (u[r].stale) return delete u[r];
+      if (!u[r]) return;
+      if (u.stale || u[r].stale) return delete u[r];
       const l = e.signal ? e.value : e;
       H(() => W(u[r].frag, c, l, t, u[r])), c = l;
     }, { effect: !0 });
@@ -387,7 +388,8 @@ function se(e, t, n, i) {
   i[r] = {}, i[r].frag = F(e);
   const c = O(n);
   O(() => {
-    if (i[r].stale || i.stale) return delete i[r];
+    if (!i[r]) return;
+    if (i.stale || i[r].stale) return delete i[r];
     let l = c.value;
     t === "value" ? l.signal ? e.value = l.value : e.value = l : t === "ref" ? (e.removeAttribute(t), n.signal && (n.value = e)) : u(e, t, l);
   }, { effect: !0 });
