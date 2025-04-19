@@ -47,9 +47,4 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.alert-message button._btnfocus{
-  border-color: orange;
-}
-.alert-message input{
-}
 

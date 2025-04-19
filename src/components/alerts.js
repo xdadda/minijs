@@ -48,21 +48,19 @@ function _Modal({content, buttons, onCancel, onClose, type, placeholder='',width
   return html`
     <div id="${alertid}" aria-busy="true" class='alert' @click="${handleCancel}">
       <div class='alert-message' @click="${e=>e.stopPropagation()}" @keyup="${handleKey}">
-        <br/>
         <div class="msg" style="${width?'width:'+width+'px;':''}">
           ${content}
           ${type==='prompt' && `<br/><input type='text' id='_in${alertid}' @keyup="${handleKey}" placeholder="${placeholder||''}"/>`}
         </div>
-        <br/>
         <div>
           ${ buttons?.map((b,i)=> ()=> html`
-                        <button id="${b.focus?('_btn'+alertid):''}" 
-                                class="${b.focus?'_btnfocus':''}" 
-                                @click="${(e)=>handleClick(e,b.onClick)}" 
-                                tabindex="${i+1}"
-                          >
-                          ${b.label}
-                        </button>
+                <button id="${b.focus?('_btn'+alertid):''}" 
+                        selected="${b.focus?'true':''}" 
+                        @click="${(e)=>handleClick(e,b.onClick)}" 
+                        tabindex="${i+1}"
+                  >
+                  ${b.label}
+                </button>
           `)}
         </div>
       </div>
