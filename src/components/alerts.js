@@ -54,8 +54,8 @@ function _Modal({content, buttons, onCancel, onClose, type, placeholder='',width
         </div>
         <div>
           ${ buttons?.map((b,i)=> ()=> html`
-                <button id="${b.focus?('_btn'+alertid):''}" 
-                        selected="${b.focus?'true':''}" 
+                <button id="${b.focus?('_btn'+alertid):''}"
+                        ${b.focus&&'selected'}
                         @click="${(e)=>handleClick(e,b.onClick)}" 
                         tabindex="${i+1}"
                   >

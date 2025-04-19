@@ -23,7 +23,7 @@ function $({ content: r, buttons: l, onCancel: o, onClose: s, type: u, placehold
     document.getElementById("_in" + t)?.focus();
   }, 10) : l && setTimeout(() => {
     document.getElementById("_btn" + t)?.focus();
-  }, 10), C`<div id="${t}" aria-busy="true" class="alert" @click="${a}"><div class="alert-message" @click="${(e) => e.stopPropagation()}" @keyup="${f}"><div class="msg" style="${i ? "width:" + i + "px;" : ""}">${r} ${u === "prompt" && `<br/><input type='text' id='_in${t}' @keyup="${f}" placeholder="${c || ""}"/>`}</div><div>${l?.map((e, p) => () => C`<button id="${e.focus ? "_btn" + t : ""}" selected="${e.focus ? "true" : ""}" @click="${(v) => d(v, e.onClick)}" tabindex="${p + 1}">${e.label}</button>`)}</div></div></div>`;
+  }, 10), C`<div id="${t}" aria-busy="true" class="alert" @click="${a}"><div class="alert-message" @click="${(e) => e.stopPropagation()}" @keyup="${f}"><div class="msg" style="${i ? "width:" + i + "px;" : ""}">${r} ${u === "prompt" && `<br/><input type='text' id='_in${t}' @keyup="${f}" placeholder="${c || ""}"/>`}</div><div>${l?.map((e, p) => () => C`<button id="${e.focus ? "_btn" + t : ""}" ${e.focus && "selected"} @click="${(v) => d(v, e.onClick)}" tabindex="${p + 1}">${e.label}</button>`)}</div></div></div>`;
 }
 async function A(r, l, o) {
   return await new Promise((s, u) => {
