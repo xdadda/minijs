@@ -51,8 +51,11 @@ const DEBUG=false;
           else if(Array.isArray(v)) {
             newvalues[i]='';
             v.forEach((item,ix)=>{
-              reactarray.push({type:'node',key:id+':'+ix,v:item});
-              newvalues[i]+=`<!--rx${id}:${ix}-->`;
+              if(typeof item === 'function') {
+                reactarray.push({type:'node',key:id+':'+ix,v:item});
+                newvalues[i]+=`<!--rx${id}:${ix}-->`;                
+              }
+              else newvalues[i]+=item
             })
           }
           else if(v===false || v===undefined){
@@ -61,12 +64,6 @@ const DEBUG=false;
             }
             newvalues.push('');
           }
-          /*
-          else if(v && typeof v === 'object' && typeof v.$item === 'function' && (Array.isArray(v.$array) || v.$array.signal) ) {
-            reactarray.push({type:'for',key:id,v});
-            newvalues[i]=`<!--rx${id}-->`;
-          }
-          */
           else {
             newvalues.push(v);
           }

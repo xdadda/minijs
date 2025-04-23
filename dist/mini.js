@@ -27,7 +27,7 @@ function R(e, ...t) {
           d ? n[a] = d : console.error("MiNi: unknown attribute type", n[a], h);
         }
       else Array.isArray(h) ? (r[a] = "", h.forEach((d, g) => {
-        c.push({ type: "node", key: y + ":" + g, v: d }), r[a] += `<!--rx${y}:${g}-->`;
+        typeof d == "function" ? (c.push({ type: "node", key: y + ":" + g, v: d }), r[a] += `<!--rx${y}:${g}-->`) : r[a] += d;
       })) : h === !1 || h === void 0 ? (l && n[a].slice(-1) === '"' && (n[a] = n[a].replace(/\s(\S+)$/, '"')), r.push("")) : r.push(h);
     }
     function o(a, h) {
