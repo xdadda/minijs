@@ -66,6 +66,12 @@ export { render, renderClient, onMount, onUnmount, map };
               delete owner[loaderid]
             }
 
+            //set all children to stale and remove them to functions' tree! 
+            //this will stop reactivity next time they get called
+            function _staleChildren(o) {
+              Object.getOwnPropertySymbols(o).forEach(k=>{if(o[k]?.frag) {o[k].stale=true; _staleChildren(o[k]); delete o[k]; }})
+            }
+
       function renderFunction(placeholder, fn, owner) {
           const myid=Symbol('$comp')
           owner[myid]={};
@@ -86,13 +92,7 @@ export { render, renderClient, onMount, onUnmount, map };
               if(owner.stale || owner[myid].stale) return delete owner[myid]; 
               //////////////////////
 
-                //set all children to stale and remove them to functions' tree! 
-                //this will stop reactivity next time they get called
-                function _staleChildren(o) {
-                  Object.getOwnPropertySymbols(o).forEach(k=>{if(o[k]?.frag) {o[k].stale=true; _staleChildren(o[k]); delete o[k]; }})
-                }
                 _staleChildren(owner[myid])
-
                 const mountlen = mountqueue.length, unmountlen = unmountqueue.length;
                 const unmountlist = _extractunmounts(owner[myid]);
                 if(unmountlist.length) unmountlist.forEach(f=>(typeof f==='function'&&f()));
@@ -262,6 +262,12 @@ export { render, renderClient, onMount, onUnmount, map };
     clearFragment(frag);
     if(frag.next) frag.next.before(tmplt.content);
     else root?.appendChild(tmplt.content);
+    frag.destroy=()=>{
+      const unmountlist = _extractunmounts(_owner);
+      if(unmountlist.length) unmountlist.forEach(f=>(typeof f==='function'&&f()));
+      _staleChildren(_owner)
+      clearFragment(frag)
+    }
     return frag;
   }
 
@@ -271,8 +277,9 @@ export { render, renderClient, onMount, onUnmount, map };
     if(typeof rootComponent!=='function') return console.error('MiNi: render 2nd arg must be a function')
     let rootowner ={0:{}};
     try {
-      await renderClient(root.children[0], html`${()=>rootComponent()}`,rootowner); //
+      const el = await renderClient(root.children[0], html`${()=>rootComponent()}`,rootowner); //
       if(debug) console.log('rootowner',rootowner);
+      return el
     }
     catch(err){
       console.error('MiNi: render', err);
