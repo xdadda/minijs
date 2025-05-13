@@ -1,4 +1,4 @@
-import { html, reactive, onMount, onUnmount, map } from 'mini'
+import { html, reactive, onMount, onUnmount, map } from '../index.js'
 
 
 //note parentElement need to have a specific height

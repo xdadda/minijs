@@ -1,6 +1,6 @@
 {
   "name": "@xdadda/mini",
-  "version": "0.2.11",
+  "version": "0.2.12",
   "description": "lightweight declarative reactive JS framework based on signals, tagged template literals and components",
   "type": "module",
   "main": "src/index.js",
@@ -29,21 +29,25 @@
   "exports": {
     ".": {
       "import": "./dist/mini.js",
-      "require": "./dist/mini.umd.cjs"
+      "require": "./dist/mini.cjs"
     },
     "./store": {
       "import": "./dist/store.js",
-      "require": "./dist/store.umd.cjs"
+      "require": "./dist/store.cjs"
     },
     "./router": {
       "import": "./dist/router.js",
-      "require": "./dist/router.umd.cjs"
+      "require": "./dist/router.cjs"
     },
     "./components": {
       "import": "./dist/components.js",
-      "require": "./dist/components.umd.cjs"
+      "require": "./dist/components.cjs"
     },
-    "./components.css": "./dist/mini.css"
+    "./components.css": "./dist/mini.css",
+    "./dev": "./src/index.js",
+    "./dev/store": "./src/store/index.js",
+    "./dev/router": "./src/router/index.js",
+    "./dev/components": "./src/components/index.js"
   },
   "devDependencies": {
     "rollup-plugin-minify-template-literals": "^1.1.7",

@@ -16,13 +16,13 @@
   */
 
   export { Router, getRoute, setRoute };
-  import { reactive, Suspense, html } from 'mini'
-  import store from 'mini/store';
+  import { reactive, Suspense, html } from '../index.js'
+  import store from '../store/index.js';
 
   //opt {nohistory:false, replacehistory:false}
-  function setRoute(url,opt={nohistory:false, replacehistory:false}){
+  function setRoute(url,opt={nohistory:false, replacehistory:true}){
     if(url!==store('$url').value) {
-      store('$url').value=url;
+      store('$url').value=url||'/';
       //default update browser history
       if(!opt.nohistory) {
         if(opt.replacehistory) window.history.pushState({}, null, url); 
@@ -59,8 +59,8 @@
     }
     store('$route',route);
 
-    if(loader) return Suspense(store('$route').element, loader);
-    else return ()=>html`${store('$route').element}`;
+    if(loader) return Suspense(()=>store('$route').element(...route.args||[]), loader);
+    else return ()=>html`${()=>store('$route').element(...route.args||[])}`;
     
   }
 

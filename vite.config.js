@@ -18,7 +18,6 @@ return {
       sourcemap: false, //unless required during development to debug production code artifacts
       modulePreload: { polyfill: false }, //not needed for modern browsers
       cssCodeSplit:false, //if small enough it's better to have it in one file to avoid flickering during suspend
-      copyPublicDir: isSsrBuild?false:true,
       lib: {
         entry: {
           mini:resolve(__dirname, 'src/index.js'),
@@ -31,7 +30,7 @@ return {
       rollupOptions: {
         // make sure to externalize deps that shouldn't be bundled
         // into your library
-        external: ['mini','mini/store'],
+        //external: ['mini','mini/store'],
       }
     }
   }

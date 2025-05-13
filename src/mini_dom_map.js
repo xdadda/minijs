@@ -85,7 +85,7 @@
         const node = bEnd < bLength ?
           (bStart && temp[bStart-1] ?
             temp[bStart-1].nextSibling :
-            temp[bEnd] ) : //temp[bEnd-bStart] ) :
+            temp[bEnd] ) :
           before;
 
         while (bStart < bEnd) {

@@ -1,54 +1,55 @@
-import { reactive as p, Suspense as f, html as h } from "mini";
-import u from "mini/store";
-function m(n, i = { nohistory: !1, replacehistory: !1 }) {
-  n !== u("$url").value && (u("$url").value = n, i.nohistory || (i.replacehistory ? window.history.pushState({}, null, n) : window.history.replaceState({}, null, n)));
+import { Suspense as c } from "./mini.js";
+import s from "./store.js";
+import { r as f, h } from "./mini_dom-DTXbPRJT.js";
+function m(n, o = { nohistory: !1, replacehistory: !0 }) {
+  n !== s("$url").value && (s("$url").value = n || "/", o.nohistory || (o.replacehistory ? window.history.pushState({}, null, n) : window.history.replaceState({}, null, n)));
 }
-function E() {
-  return u("$route");
+function v() {
+  return s("$route");
 }
-async function v({ routes: n, loader: i = !1, handleAuth: l }) {
-  if (!u("$route")) {
-    let o = function(e) {
+async function U({ routes: n, loader: o = !1, handleAuth: l }) {
+  if (!s("$route")) {
+    let i = function(e) {
       e.preventDefault(), e.stopPropagation();
-      const s = window.location.href.replace(window.location.origin, "");
-      m(s, !0);
+      const u = window.location.href.replace(window.location.origin, "");
+      m(u, !0);
     };
-    u("$url", p(window.location.href.replace(window.location.origin, ""))), window.addEventListener("popstate", o);
+    s("$url", f(window.location.href.replace(window.location.origin, ""))), window.addEventListener("popstate", i);
   }
-  let t = $(decodeURIComponent(u("$url").value), n), r = !0;
+  let t = $(decodeURIComponent(s("$url").value), n), r = !0;
   if (!(l && (r = await l(t), !r)))
-    return u("$route", t), i ? f(u("$route").element, i) : () => h`${u("$route").element}`;
+    return s("$route", t), o ? c(() => s("$route").element(...t.args || []), o) : () => h`${() => s("$route").element(...t.args || [])}`;
 }
-function d(n, i) {
-  const l = n.split("/").map((a, c) => [a.replace(":", ""), c, a.charAt(0) === ":"]), t = l.filter(([, , a]) => a), r = l.filter(([, , a]) => !a), o = i.split("/"), e = t.map(([a, c]) => [a, o[c]]);
-  let s = !0;
-  return r.forEach(([a, c]) => s = s & a === o[c]), s ? Object.fromEntries(e) : null;
+function d(n, o) {
+  const l = n.split("/").map((a, p) => [a.replace(":", ""), p, a.charAt(0) === ":"]), t = l.filter(([, , a]) => a), r = l.filter(([, , a]) => !a), i = o.split("/"), e = t.map(([a, p]) => [a, i[p]]);
+  let u = !0;
+  return r.forEach(([a, p]) => u = u & a === i[p]), u ? Object.fromEntries(e) : null;
 }
-function w(n, i) {
-  const l = (o) => o.replace(/([.*+?^=!:${}()|[\]/\\])/g, "\\$1"), t = new RegExp("^" + n.split("*").map(l).join("(.*)") + "$"), r = i.match(t);
+function w(n, o) {
+  const l = (i) => i.replace(/([.*+?^=!:${}()|[\]/\\])/g, "\\$1"), t = new RegExp("^" + n.split("*").map(l).join("(.*)") + "$"), r = o.match(t);
   return r && r[1] !== null ? "/" + r[1] : null;
 }
-function $(n, i) {
-  return g(n, null, i);
+function $(n, o) {
+  return g(n, null, o);
 }
-function g(n, i, l) {
+function g(n, o, l) {
   let t = n || "/";
   t && t !== "/" && t.slice(-1) === "/" && (t = t.slice(0, -1));
   let r = t.split("?")[1];
   r && (r = new URLSearchParams(r), r = Object.fromEntries([...r]), t = t.split("?")[0]);
-  const o = l?.find((e) => {
+  const i = l?.find((e) => {
     if (e.path !== "/" && e.path.slice(-1) === "/" && (e.path = e.path.slice(0, -1)), e.path === t || e.path.includes("*") && (t === e.path.slice(0, -2) ? e.subpath = "/" : e.subpath = w(e.path, t), e.subpath))
       return !0;
     if (e.path.includes(":")) {
-      const s = d(e.path, t);
-      return s ? (e.params = s, !0) : !1;
+      const u = d(e.path, t);
+      return u ? (e.params = u, !0) : !1;
     }
     return !1;
   });
-  return o ? (o.url = t, o.query = r, o) : !1;
+  return i ? (i.url = t, i.query = r, i) : !1;
 }
 export {
-  v as Router,
-  E as getRoute,
+  U as Router,
+  v as getRoute,
   m as setRoute
 };

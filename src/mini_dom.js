@@ -33,6 +33,7 @@ export { render, renderClient, onMount, onUnmount, map };
             }
 
             function renderSync(val, owner) {
+                if(!owner) return;
                 if(owner.hidden) owner.hidden=false;
                 if(val?.html){ //render SYNC COMPONENT
                   renderClient(owner.frag, val, owner);
@@ -119,16 +120,16 @@ export { render, renderClient, onMount, onUnmount, map };
               
               if(fn._loader) owner[myid].loader=true
               if(fn._suspense) {
+                if(!owner[myid]) return
                 owner[myid].suspense=true
                 clearSuspenseLoader(owner)
                 delete fn._suspense
               }
               //////////////////////
-
-              val = typeof val === 'function' ? untrack(val) : val;
+              val = typeof val === 'function' && !val?.html  ? untrack(val) : val;
               renderSync(val, owner[myid])
                     
-          },{effect:true})          
+          },{effect:true})
       }
 
 
@@ -187,7 +188,7 @@ export { render, renderClient, onMount, onUnmount, map };
 
           function findPlaceholder(root,commentText) {
             //crawl for comments
-            return document.createTreeWalker(root, 128, /* NodeFilter.SHOW_COMMENT */ { acceptNode:  (node) => node.textContent === commentText? 1 : 2 }).nextNode();
+            return document.createTreeWalker(root, 128, { acceptNode:  (node) => node.textContent === commentText? 1 : 2 }).nextNode();
           }
 
   //@param frag: fragment/node to replace with t.html
@@ -234,15 +235,8 @@ export { render, renderClient, onMount, onUnmount, map };
                 else console.error('MiNi: unknown node value',v);
             }  
           break;
-        /*
-        case 'for':
-            placeholder=findPlaceholder(tmplt.content,'rx'+key);
-            if(!placeholder) console.error('MiNi: cannot find placeholder','rx'+key,root);
-            else renderDiffArray(placeholder, v, _owner);
-          break;
-        */
-        case '@': //create event listener
-        case ':': //create reactive attribute
+        case '@':
+        case ':':
             placeholder = tmplt.content.querySelector(`[${key+i}]`);
             if(!placeholder) console.error('MiNi: cannot find attribute',key+i);
             else {
