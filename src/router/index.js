@@ -20,8 +20,9 @@
   import store from '../store/index.js';
 
   //opt {nohistory:false, replacehistory:false}
-  function setRoute(url,opt={nohistory:false, replacehistory:true}){
+  function setRoute(url,args,opt={nohistory:false, replacehistory:true}){
     if(url!==store('$url').value) {
+      if(args) store('$args',args)
       store('$url').value=url||'/';
       //default update browser history
       if(!opt.nohistory) {
@@ -35,6 +36,7 @@
     return store('$route');
   }
 
+
   async function Router({routes, loader=false, handleAuth}){
     if(!store('$route')) {
       //console.log('>>INIT Router<<')
@@ -45,22 +47,24 @@
         e.preventDefault(); // stop request to server for new html
         e.stopPropagation();
         const url = window.location.href.replace(window.location.origin,'');
-        setRoute(url,true);
+        setRoute(url);
       }
       window.addEventListener('popstate',  updateRoute);
     }
     
-    let route = getElementFromURL(decodeURIComponent(store('$url').value), routes);
+    let url = store('$url').value
+    let route = getElementFromURL(decodeURIComponent(url), routes);
 
     let auth=true;
     if(handleAuth) {  //handleAuth should return true if ok, error url if failed (eg: /login)
       auth = await handleAuth(route);
       if(!auth) return
     }
+    route.args = store('$args')
     store('$route',route);
 
-    if(loader) return Suspense(()=>store('$route').element(...route.args||[]), loader);
-    else return ()=>html`${()=>store('$route').element(...route.args||[])}`;
+    if(loader) return Suspense(()=>store('$route').element(route.args), loader);
+    else return ()=>html`${()=>store('$route').element(route.args)}`;
     
   }
 

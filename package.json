@@ -1,6 +1,6 @@
 {
   "name": "@xdadda/mini",
-  "version": "0.2.12",
+  "version": "0.2.13",
   "description": "lightweight declarative reactive JS framework based on signals, tagged template literals and components",
   "type": "module",
   "main": "src/index.js",
