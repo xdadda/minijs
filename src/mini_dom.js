@@ -103,6 +103,7 @@ export { render, renderClient, onMount, onUnmount, map };
               let val = fn();
               if(val instanceof Promise) val=await val //an async component
               //////////////////////
+              if(!owner[myid]) return;
 
                 //intercept mount/unmount
                 if(mountqueue.length>mountlen) {

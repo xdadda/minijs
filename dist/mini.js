@@ -1,5 +1,5 @@
-import { h as a } from "./mini_dom-DTXbPRJT.js";
-import { m as c, o as f, b as m, r as p, a as $, u as d } from "./mini_dom-DTXbPRJT.js";
+import { h as a } from "./mini_dom-7AavQnx9.js";
+import { m as c, o as f, b as m, r as p, a as $, u as d } from "./mini_dom-7AavQnx9.js";
 function o(r, e) {
   const n = () => e();
   return n._loader = !0, r._suspense = !0, a`${n}${r}`;

@@ -60,7 +60,7 @@
       auth = await handleAuth(route);
       if(!auth) return
     }
-    route.args = store('$args')
+    route.args = store('$args') || route.args || null
     store('$route',route);
 
     if(loader) return Suspense(()=>store('$route').element(route.args), loader);

@@ -352,20 +352,22 @@ function D(e, t, n) {
     const l = A.length, r = E.length, c = z(n[i]);
     c.length && c.forEach((o) => typeof o == "function" && o());
     let s = t();
-    if (s instanceof Promise && (s = await s), A.length > l) {
-      const o = A.length - l;
-      n[i].mount = A.splice(-o, o);
+    if (s instanceof Promise && (s = await s), !!n[i]) {
+      if (A.length > l) {
+        const o = A.length - l;
+        n[i].mount = A.splice(-o, o);
+      }
+      if (E.length > r) {
+        const o = E.length - r;
+        n[i].unmount = E.splice(-o, o);
+      }
+      if (typeof s == "function" && s?._map) return s(n, i);
+      if (t._loader && (n[i].loader = !0), t._suspense) {
+        if (!n[i]) return;
+        n[i].suspense = !0, se(n), delete t._suspense;
+      }
+      s = typeof s == "function" && !s?.html ? W(s) : s, ie(s, n[i]);
     }
-    if (E.length > r) {
-      const o = E.length - r;
-      n[i].unmount = E.splice(-o, o);
-    }
-    if (typeof s == "function" && s?._map) return s(n, i);
-    if (t._loader && (n[i].loader = !0), t._suspense) {
-      if (!n[i]) return;
-      n[i].suspense = !0, se(n), delete t._suspense;
-    }
-    s = typeof s == "function" && !s?.html ? W(s) : s, ie(s, n[i]);
   }, { effect: !0 });
 }
 function ce(e, t) {
